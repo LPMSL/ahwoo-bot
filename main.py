@@ -189,6 +189,7 @@ async def _handle_text_message(event: MessageEvent):
     auto_reply   = analysis["auto_reply"]
     priority     = analysis["priority"]
     reason       = analysis["reason"]
+    system_status = analysis.get("system_status")
     confidence   = analysis["confidence"]
     used_static  = analysis["used_static"]
     intent_zh    = INTENTS.get(intent, {}).get("zh", intent)
@@ -228,6 +229,7 @@ async def _handle_text_message(event: MessageEvent):
                 intent=intent,
                 priority=priority,
                 reason=reason,
+                system_status=system_status,
                 total_turns=total_turns,
             )
 

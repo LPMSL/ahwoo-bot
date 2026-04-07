@@ -31,7 +31,7 @@ async def analyze_message(
     輸入：用戶訊息 + 歷史對話 + 輪數
     輸出：{
         intent, needs_human, auto_reply, priority,
-        reason, confidence, used_static
+        reason, confidence, used_static, system_status
     }
     """
 
@@ -46,6 +46,7 @@ async def analyze_message(
             "reason":        f"關鍵字快速匹配：{INTENTS[quick_intent]['zh']}",
             "confidence":    0.95,
             "used_static":   True,
+            "system_status": None,
         }
 
     # Step 2: 超過輪數閾值 → 轉人工
@@ -59,6 +60,7 @@ async def analyze_message(
             "reason":        f"對話已達 {total_turns} 輪，自動轉人工處理",
             "confidence":    1.0,
             "used_static":   False,
+            "system_status": None,
         }
 
     # Step 3: 呼叫 Claude 做完整語意分析 + 回覆生成
@@ -145,6 +147,7 @@ async def _call_claude(user_message: str, history: list[dict]) -> dict:
         result.setdefault("priority",    "normal")
         result.setdefault("reason",      "Claude 分析")
         result.setdefault("auto_reply",  "感謝你的訊息！我們會盡快回覆你 .ᐟ")
+        result.setdefault("system_status", None)
         result["used_static"] = False
 
         return result
@@ -172,12 +175,33 @@ def _quick_keyword_check(text: str) -> str | None:
 
 def _fallback_response(reason: str) -> dict:
     """API 出錯時的保底回應"""
+    system_status = _summarize_system_status(reason)
     return {
         "intent":      "other",
         "needs_human": True,
         "auto_reply":  "感謝你的訊息！我們會盡快回覆你 .ᐟ",
         "priority":    "normal",
-        "reason":      f"fallback：{reason}",
+        "reason":      "AI 回覆暫時失敗，已轉人工處理",
         "confidence":  0.0,
         "used_static": False,
+        "system_status": system_status,
     }
+
+
+def _summarize_system_status(raw_error: str) -> str:
+    """將 API / 系統錯誤摘要成容易閱讀的短句"""
+    error_text = (raw_error or "").lower()
+
+    if "credit balance is too low" in error_text:
+        return "Anthropic 點數不足"
+    if "invalid_request_error" in error_text:
+        return "Anthropic 請求格式錯誤"
+    if "rate limit" in error_text:
+        return "Anthropic 請求過多"
+    if "timeout" in error_text:
+        return "Claude API 逾時"
+    if "json" in error_text:
+        return "Claude 回傳格式異常"
+
+    trimmed = raw_error.strip().replace("\n", " ")
+    return trimmed[:80] + "…" if len(trimmed) > 80 else trimmed

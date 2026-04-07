@@ -42,6 +42,7 @@ async def notify_human(
     intent:        str,
     priority:      str,
     reason:        str,
+    system_status: str | None,
     total_turns:   int,
 ) -> bool:
     """
@@ -57,6 +58,9 @@ async def notify_human(
 
         # 截斷過長訊息
         msg_preview = message[:300] + "…" if len(message) > 300 else message
+        system_line = ""
+        if system_status:
+            system_line = f"\n🛠️ *系統狀態：* {_escape(system_status)}"
 
         text = (
             f"{emoji} *需要人工回覆*\n"
@@ -65,7 +69,8 @@ async def notify_human(
             f"🏷️ *類別：* {_escape(intent_text)}\n"
             f"💬 *訊息：*\n{_escape(msg_preview)}\n"
             f"{'─' * 28}\n"
-            f"🔍 *判斷依據：* {_escape(reason)}{turns_warning}\n\n"
+            f"📌 *處理原因：* {_escape(reason)}{turns_warning}"
+            f"{system_line}\n\n"
             f"👉 [前往 LINE OA 回覆](https://manager.line.biz/)"
         )
 
@@ -218,12 +223,12 @@ async def notify_api_failure(error_msg: str) -> bool:
     """Claude API 失敗時通知（bot 已降級為 fallback 模式）"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
-        short_err = _escape(str(error_msg)[:200])
+        system_status = _escape(_summarize_system_status(error_msg))
         text = (
-            f"⚠️ *Claude API 失敗 \\— Bot 降級中*\n"
+            f"⚠️ *AI 回覆異常*\n"
             f"{'─' * 28}\n"
-            f"🤖 所有對話暫時使用 fallback 回覆\n"
-            f"❌ 錯誤：`{short_err}`\n\n"
+            f"📌 *影響範圍：* 所有對話暫時改由 fallback 回覆\n"
+            f"🛠️ *系統狀態：* {system_status}\n\n"
             f"請至 [Anthropic Console](https://console\\.anthropic\\.com) 確認餘額或狀態"
         )
         await bot.send_message(
@@ -271,3 +276,22 @@ def _escape(text: str) -> str:
     for ch in special:
         text = text.replace(ch, f"\\{ch}")
     return text
+
+
+def _summarize_system_status(raw_error: str) -> str:
+    """將 API / 系統錯誤摘要成容易閱讀的短句"""
+    error_text = (raw_error or "").lower()
+
+    if "credit balance is too low" in error_text:
+        return "Anthropic 點數不足"
+    if "invalid_request_error" in error_text:
+        return "Anthropic 請求格式錯誤"
+    if "rate limit" in error_text:
+        return "Anthropic 請求過多"
+    if "timeout" in error_text:
+        return "Claude API 逾時"
+    if "json" in error_text:
+        return "Claude 回傳格式異常"
+
+    trimmed = raw_error.strip().replace("\n", " ")
+    return trimmed[:80] + "…" if len(trimmed) > 80 else trimmed
