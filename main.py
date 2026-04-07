@@ -37,7 +37,10 @@ from handlers.telegram_handler import (
     notify_unanswered_alert,
 )
 from handlers.sheets_handler import log_conversation, get_unanswered_conversations
-from handlers.session_handler import get_turns, increment_turns, get_history, append_history
+from handlers.session_handler import (
+    get_turns, increment_turns, get_history, append_history,
+    is_alert_on_cooldown, set_alert_cooldown,
+)
 
 
 # ── 日誌設定 ────────────────────────────────────────────────────────────────
@@ -65,8 +68,16 @@ async def _unanswered_alert_loop():
         try:
             conversations = await get_unanswered_conversations(hours_threshold=4)
             if conversations:
-                await notify_unanswered_alert(conversations)
-                logger.info(f"逾時警報掃描完成：{len(conversations)} 個對話待回覆")
+                # 過濾冷卻中的對話，避免每小時重複提醒同一筆
+                to_alert = [c for c in conversations if not await is_alert_on_cooldown(c["user_id"])]
+                if to_alert:
+                    await notify_unanswered_alert(to_alert)
+                    for conv in to_alert:
+                        await set_alert_cooldown(conv["user_id"])
+                    skipped = len(conversations) - len(to_alert)
+                    logger.info(f"逾時警報：{len(to_alert)} 個已送出，{skipped} 個冷卻中略過")
+                else:
+                    logger.debug("逾時警報掃描：所有待回覆對話均在冷卻期內")
             else:
                 logger.debug("逾時警報掃描：無待回覆對話")
         except Exception as e:

@@ -146,9 +146,8 @@ async def get_unanswered_conversations(hours_threshold: int = 4) -> list:
         all_rows = ws.get_all_records()
         now_tw   = datetime.now(TW_TZ)
 
-        # 依 user_id 分組：記錄最新 needs_human 訊息 與 最新任意訊息
+        # 依 user_id 分組：記錄最新 needs_human 訊息
         latest_needs_human: dict = {}
-        latest_any:         dict = {}
 
         for row in all_rows:
             uid  = row.get("用戶ID", "")
@@ -159,10 +158,6 @@ async def get_unanswered_conversations(hours_threshold: int = 4) -> list:
                 ts = datetime.strptime(ts_s, "%Y/%m/%d %H:%M:%S").replace(tzinfo=TW_TZ)
             except ValueError:
                 continue
-
-            # 更新最新任意訊息
-            if uid not in latest_any or ts > latest_any[uid]["ts"]:
-                latest_any[uid] = {"ts": ts}
 
             # 更新最新 needs_human 訊息
             if row.get("需要人工") == "是":
@@ -182,11 +177,6 @@ async def get_unanswered_conversations(hours_threshold: int = 4) -> list:
 
             # 逾時窗口：4–48 小時
             if not (hours_threshold <= waiting_hrs <= 48):
-                continue
-
-            # 如果顧客在 needs_human 之後又傳了新訊息，表示對話仍在進行，跳過
-            latest = latest_any.get(uid, {}).get("ts", nh["ts"])
-            if latest > nh["ts"]:
                 continue
 
             alerts.append({

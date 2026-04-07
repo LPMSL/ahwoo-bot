@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 SESSION_TTL = 86400
 MAX_HISTORY = 40  # 最多保留 40 則訊息（20 輪）
 
+# 未回覆警報冷卻：同一對話最快每 4 小時才再次提醒
+ALERT_COOLDOWN_SECS = 4 * 3600
+
 _redis: Redis | None = None
 
 
@@ -57,6 +60,24 @@ async def get_history(user_id: str) -> list[dict]:
     except Exception as e:
         logger.error(f"Redis get_history 失敗: {e}")
         return []
+
+
+async def is_alert_on_cooldown(user_id: str) -> bool:
+    """True 表示該用戶警報在冷卻期內，不應再次提醒；錯誤時 fail open（允許警報）"""
+    try:
+        val = await _get_redis().get(f"alert:{user_id}")
+        return val is not None
+    except Exception as e:
+        logger.error(f"Redis is_alert_on_cooldown 失敗: {e}")
+        return False
+
+
+async def set_alert_cooldown(user_id: str) -> None:
+    """標記已送出警報，冷卻 4 小時內不重複提醒"""
+    try:
+        await _get_redis().set(f"alert:{user_id}", "1", ex=ALERT_COOLDOWN_SECS)
+    except Exception as e:
+        logger.error(f"Redis set_alert_cooldown 失敗: {e}")
 
 
 async def append_history(user_id: str, user_msg: str, bot_reply: str) -> None:
