@@ -4,6 +4,7 @@ sheets_handler.py — Google Sheets 對話記錄
 """
 
 import logging
+import traceback
 from datetime import datetime, timezone, timedelta
 import gspread
 from google.oauth2.service_account import Credentials
@@ -127,7 +128,7 @@ async def log_conversation(
         return True
 
     except Exception as e:
-        logger.error(f"Google Sheets 寫入失敗: {e}")
+        logger.error(f"Google Sheets 寫入失敗: {type(e).__name__}: {e}\n{traceback.format_exc()}")
         return False
 
 
@@ -202,7 +203,7 @@ async def get_unanswered_conversations(hours_threshold: int = 4) -> list:
         return alerts
 
     except Exception as e:
-        logger.error(f"get_unanswered_conversations 失敗: {e}")
+        logger.error(f"get_unanswered_conversations 失敗: {type(e).__name__}: {e}\n{traceback.format_exc()}")
         return []
 
 
