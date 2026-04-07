@@ -3,6 +3,7 @@ claude_handler.py — Claude API 意圖辨識 + 品牌語氣回覆生成
 使用 claude-haiku 達到速度與成本平衡（每次呼叫約 $0.001 USD）
 """
 
+import asyncio
 import json
 import logging
 from anthropic import AsyncAnthropic
@@ -153,6 +154,8 @@ async def _call_claude(user_message: str, history: list[dict]) -> dict:
         return _fallback_response("JSON 解析失敗")
     except Exception as e:
         logger.error(f"Claude API 錯誤: {e}")
+        from handlers.telegram_handler import notify_api_failure
+        asyncio.create_task(notify_api_failure(str(e)))
         return _fallback_response(str(e))
 
 

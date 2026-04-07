@@ -214,6 +214,30 @@ async def notify_unanswered_alert(conversations: list) -> bool:
         return False
 
 
+async def notify_api_failure(error_msg: str) -> bool:
+    """Claude API 失敗時通知（bot 已降級為 fallback 模式）"""
+    try:
+        bot = Bot(token=TELEGRAM_BOT_TOKEN)
+        short_err = _escape(str(error_msg)[:200])
+        text = (
+            f"⚠️ *Claude API 失敗 \\— Bot 降級中*\n"
+            f"{'─' * 28}\n"
+            f"🤖 所有對話暫時使用 fallback 回覆\n"
+            f"❌ 錯誤：`{short_err}`\n\n"
+            f"請至 [Anthropic Console](https://console\\.anthropic\\.com) 確認餘額或狀態"
+        )
+        await bot.send_message(
+            chat_id=TELEGRAM_CHAT_ID,
+            text=text,
+            parse_mode=ParseMode.MARKDOWN_V2,
+            disable_web_page_preview=True,
+        )
+        return True
+    except Exception as e:
+        logger.error(f"API 失敗通知發送失敗: {e}")
+        return False
+
+
 async def send_daily_summary(stats: dict) -> bool:
     """每日統計摘要（可選：設定定時任務呼叫）"""
     try:

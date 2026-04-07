@@ -10,7 +10,6 @@ import hashlib
 import hmac
 import base64
 from contextlib import asynccontextmanager
-from collections import defaultdict
 
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
@@ -38,6 +37,7 @@ from handlers.telegram_handler import (
     notify_unanswered_alert,
 )
 from handlers.sheets_handler import log_conversation, get_unanswered_conversations
+from handlers.session_handler import get_turns, increment_turns, get_history, append_history
 
 
 # ── 日誌設定 ────────────────────────────────────────────────────────────────
@@ -46,12 +46,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-
-# ── 對話歷史（in-memory，重啟後清空）───────────────────────────────────────
-# 結構：{ user_id: [{"role": "user"/"assistant", "content": "..."}, ...] }
-conversation_history: dict[str, list[dict]] = defaultdict(list)
-conversation_turns:   dict[str, int]        = defaultdict(int)
 
 
 # ── LINE SDK 初始化 ─────────────────────────────────────────────────────────
@@ -166,10 +160,9 @@ async def _handle_text_message(event: MessageEvent):
     # 取得顯示名稱
     display_name = await _get_display_name(user_id)
 
-    # 更新輪數與歷史
-    conversation_turns[user_id]  += 1
-    total_turns = conversation_turns[user_id]
-    history     = conversation_history[user_id]
+    # 從 Redis 取得輪數與歷史
+    total_turns = await increment_turns(user_id)
+    history     = await get_history(user_id)
 
     logger.info(f"[{display_name}] 輪{total_turns}: {message_text[:60]}")
 
@@ -189,12 +182,8 @@ async def _handle_text_message(event: MessageEvent):
     used_static  = analysis["used_static"]
     intent_zh    = INTENTS.get(intent, {}).get("zh", intent)
 
-    # ── 更新對話歷史 ──────────────────────────────────────────────────────
-    history.append({"role": "user",      "content": message_text})
-    history.append({"role": "assistant", "content": auto_reply})
-    # 只保留最近 20 輪
-    if len(history) > 40:
-        conversation_history[user_id] = history[-40:]
+    # ── 更新對話歷史到 Redis ──────────────────────────────────────────────
+    await append_history(user_id, message_text, auto_reply)
 
     # ── 自動回覆 LINE ─────────────────────────────────────────────────────
     reply_sent = False
