@@ -11,7 +11,7 @@ load_dotenv()
 # ── LINE Messaging API ──────────────────────────────────────────────────────
 LINE_CHANNEL_SECRET       = os.environ["LINE_CHANNEL_SECRET"]
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-LINE_OA_ACCOUNT_ID        = os.getenv("LINE_OA_ACCOUNT_ID", "")  # LINE OA Manager 內部帳號 ID（數字），從瀏覽器網址列取得
+LINE_OA_ACCOUNT_ID        = os.getenv("LINE_OA_ACCOUNT_ID", "")  # LINE OA 帳號 ID（U 開頭），從 chat.line.biz/{這串}/chat/... 取得
 
 # ── Anthropic Claude API（v2.0 已移除 Claude 呼叫，保留可選避免舊 env var 報錯）──
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")   # 不再必填

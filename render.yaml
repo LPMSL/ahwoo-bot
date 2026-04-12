@@ -10,7 +10,7 @@ services:
       - key: LINE_CHANNEL_ACCESS_TOKEN
         sync: false
       - key: LINE_OA_ACCOUNT_ID
-        sync: false          # LINE OA Manager 內部帳號 ID（數字），從 manager.line.biz/account/{這串數字}/... 取得
+        sync: false          # LINE OA 帳號 ID（U 開頭），從 chat.line.biz/{這串}/chat/... 取得
       # - key: ANTHROPIC_API_KEY   # v2.0 已移除 Claude API，可選填或直接刪除
       #   sync: false
       - key: TELEGRAM_BOT_TOKEN
