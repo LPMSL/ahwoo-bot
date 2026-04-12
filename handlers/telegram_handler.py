@@ -10,7 +10,7 @@ from telegram.constants import ParseMode
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, LINE_OA_BASIC_ID
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,15 @@ ACTION_LABEL = {
     "other":             "❓ 待確認",
 }
 
-LINE_OA_URL = "https://manager.line.biz/"
+
+def _line_chat_url(user_id: str) -> str:
+    """產生 LINE OA Manager 直連特定顧客對話的 URL
+    格式：https://manager.line.biz/account/{basicId}/chat/{userId}
+    若未設定 LINE_OA_BASIC_ID，退回 LINE OA 首頁
+    """
+    if LINE_OA_BASIC_ID:
+        return f"https://manager.line.biz/account/{LINE_OA_BASIC_ID}/chat/{user_id}"
+    return "https://manager.line.biz/"
 
 
 async def notify_human(
@@ -46,6 +54,7 @@ async def notify_human(
         action = ACTION_LABEL.get(intent, f"❓ {intent}")
         msg_preview = message[:300] + "…" if len(message) > 300 else message
         turns_line = f"\n⚠️ 已對話 {total_turns} 輪" if total_turns >= 10 else ""
+        chat_url = _line_chat_url(user_id)
 
         text = (
             f"{action} ← {_escape(display_name)}\n"
@@ -53,7 +62,7 @@ async def notify_human(
             f"{_escape(msg_preview)}\n"
             f"{'─' * 20}"
             f"{turns_line}\n"
-            f"[→ LINE OA 回覆]({LINE_OA_URL})"
+            f"[→ 前往對話]({chat_url})"
         )
 
         await bot.send_message(
@@ -73,12 +82,14 @@ async def notify_human(
 async def notify_pre_form_filled(
     display_name: str,
     message: str,
+    user_id: str = "",
 ) -> bool:
     """預篩選表單回填通知 — 版本 A"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
         msg_preview = message[:300] + "…" if len(message) > 300 else message
+        chat_url = _line_chat_url(user_id)
 
         text = (
             f"📝 確認檔期 ← {_escape(display_name)}\n"
@@ -86,7 +97,7 @@ async def notify_pre_form_filled(
             f"{_escape(msg_preview)}\n"
             f"{'─' * 20}\n"
             f"✅ Bot 已回「稍待確認」\n"
-            f"[→ LINE OA 傳完整表單]({LINE_OA_URL})"
+            f"[→ 前往對話傳完整表單]({chat_url})"
         )
 
         await bot.send_message(
@@ -104,17 +115,19 @@ async def notify_pre_form_filled(
 async def notify_form_submitted(
     display_name: str,
     form_content: str,
+    user_id: str = "",
 ) -> bool:
     """完整表單提交通知 — 版本 A"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
+        chat_url = _line_chat_url(user_id)
 
         text = (
             f"📋 新表單 ← {_escape(display_name)}\n"
             f"{'─' * 20}\n"
             f"{_escape(form_content[:600])}\n"
             f"{'─' * 20}\n"
-            f"[→ LINE OA 確認]({LINE_OA_URL})"
+            f"[→ 前往對話確認]({chat_url})"
         )
 
         await bot.send_message(
@@ -132,19 +145,21 @@ async def notify_form_submitted(
 async def notify_payment_received(
     display_name: str,
     message: str,
+    user_id: str = "",
 ) -> bool:
     """付款通知 — 版本 A"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
         msg_preview = message[:300] + "…" if len(message) > 300 else message
+        chat_url = _line_chat_url(user_id)
 
         text = (
             f"💰 確認付款 ← {_escape(display_name)}\n"
             f"{'─' * 20}\n"
             f"{_escape(msg_preview)}\n"
             f"{'─' * 20}\n"
-            f"[→ LINE OA 確認]({LINE_OA_URL})"
+            f"[→ 前往對話確認]({chat_url})"
         )
 
         await bot.send_message(

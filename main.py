@@ -216,11 +216,11 @@ async def _handle_text_message(event: MessageEvent):
     if needs_human:
         # 特殊意圖用專屬通知格式
         if intent == "pre_form_filled":
-            telegram_ok = await notify_pre_form_filled(display_name, message_text)
+            telegram_ok = await notify_pre_form_filled(display_name, message_text, user_id)
         elif intent == "form_submitted":
-            telegram_ok = await notify_form_submitted(display_name, message_text)
+            telegram_ok = await notify_form_submitted(display_name, message_text, user_id)
         elif intent == "payment_received":
-            telegram_ok = await notify_payment_received(display_name, message_text)
+            telegram_ok = await notify_payment_received(display_name, message_text, user_id)
         else:
             telegram_ok = await notify_human(
                 user_id=user_id,
