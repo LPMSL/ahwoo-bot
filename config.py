@@ -11,7 +11,7 @@ load_dotenv()
 # ── LINE Messaging API ──────────────────────────────────────────────────────
 LINE_CHANNEL_SECRET       = os.environ["LINE_CHANNEL_SECRET"]
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-LINE_OA_BASIC_ID          = os.getenv("LINE_OA_BASIC_ID", "")  # 例：@ahwoo_dessert（用於 Telegram 直連連結）
+LINE_OA_ACCOUNT_ID        = os.getenv("LINE_OA_ACCOUNT_ID", "")  # LINE OA Manager 內部帳號 ID（數字），從瀏覽器網址列取得
 
 # ── Anthropic Claude API（v2.0 已移除 Claude 呼叫，保留可選避免舊 env var 報錯）──
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")   # 不再必填

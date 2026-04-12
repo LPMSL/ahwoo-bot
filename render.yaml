@@ -9,8 +9,8 @@ services:
         sync: false          # 在 Render Dashboard 手動填入
       - key: LINE_CHANNEL_ACCESS_TOKEN
         sync: false
-      - key: LINE_OA_BASIC_ID
-        sync: false          # LINE OA 基本 ID，例：@ahwoo_dessert（用於 Telegram 直連連結）
+      - key: LINE_OA_ACCOUNT_ID
+        sync: false          # LINE OA Manager 內部帳號 ID（數字），從 manager.line.biz/account/{這串數字}/... 取得
       # - key: ANTHROPIC_API_KEY   # v2.0 已移除 Claude API，可選填或直接刪除
       #   sync: false
       - key: TELEGRAM_BOT_TOKEN

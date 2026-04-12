@@ -10,7 +10,7 @@ from telegram.constants import ParseMode
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, LINE_OA_BASIC_ID
+from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, LINE_OA_ACCOUNT_ID
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +29,12 @@ ACTION_LABEL = {
 
 def _line_chat_url(user_id: str) -> str:
     """產生 LINE OA Manager 直連特定顧客對話的 URL
-    格式：https://manager.line.biz/account/{basicId}/chat/{userId}
-    若未設定 LINE_OA_BASIC_ID，退回 LINE OA 首頁
+    格式：https://manager.line.biz/account/{accountId}/chat/{userId}
+    accountId = LINE OA Manager 網址列中的數字 ID
+    若未設定 LINE_OA_ACCOUNT_ID，退回 LINE OA 首頁
     """
-    if LINE_OA_BASIC_ID:
-        return f"https://manager.line.biz/account/{LINE_OA_BASIC_ID}/chat/{user_id}"
+    if LINE_OA_ACCOUNT_ID and user_id:
+        return f"https://manager.line.biz/account/{LINE_OA_ACCOUNT_ID}/chat/{user_id}"
     return "https://manager.line.biz/"
 
 
