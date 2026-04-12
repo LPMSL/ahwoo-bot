@@ -1,7 +1,14 @@
 """
-telegram_handler.py — 人工介入通知系統
-v2.1：版本 A「行動優先」格式
-第一行 = 要做什麼 ← 誰傳的，一眼看清楚
+telegram_handler_v2b.py — 版本 B「標籤分類」格式（備用）
+切換方式：將此檔改名為 telegram_handler.py 取代現有版本
+
+格式範例：
+  🔴【緊急】改期/取消
+  👤 王大明  ·  第3輪
+  ─────────────────
+  我想改訂單，之前約的6月要取消
+  ─────────────────
+  👉 LINE OA
 """
 
 import logging
@@ -14,16 +21,24 @@ from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logger = logging.getLogger(__name__)
 
-# ── 動作標籤（行動優先格式第一行用）────────────────────────────────────────
-ACTION_LABEL = {
-    "pre_form_filled":   "📝 確認檔期",
-    "form_submitted":    "📋 新表單",
-    "payment_received":  "💰 確認付款",
-    "custom_design":     "🎨 客製設計",
-    "change_reschedule": "🔴 改期／取消",
-    "complaint":         "🔴 顧客抱怨",
-    "price_inquiry":     "💬 詢問報價",
-    "other":             "❓ 待確認",
+# ── 優先等級標籤 ─────────────────────────────────────────────────────────────
+PRIORITY_LABEL = {
+    "low":    "🔵【一般】",
+    "normal": "🟡【一般】",
+    "high":   "🟠【高優先】",
+    "urgent": "🔴【緊急】",
+}
+
+# ── 分類標籤 ─────────────────────────────────────────────────────────────────
+INTENT_LABEL = {
+    "pre_form_filled":   "待確認檔期",
+    "form_submitted":    "新表單",
+    "payment_received":  "付款通知",
+    "custom_design":     "客製設計",
+    "change_reschedule": "改期／取消",
+    "complaint":         "顧客抱怨",
+    "price_inquiry":     "詢問報價",
+    "other":             "待確認",
 }
 
 LINE_OA_URL = "https://manager.line.biz/"
@@ -39,21 +54,22 @@ async def notify_human(
     system_status: str | None,
     total_turns:   int,
 ) -> bool:
-    """一般需人工通知 — 版本 A 行動優先格式"""
+    """一般需人工通知 — 版本 B 標籤分類格式"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
-        action = ACTION_LABEL.get(intent, f"❓ {intent}")
-        msg_preview = message[:300] + "…" if len(message) > 300 else message
-        turns_line = f"\n⚠️ 已對話 {total_turns} 輪" if total_turns >= 10 else ""
+        p_label   = PRIORITY_LABEL.get(priority, "🟡【一般】")
+        i_label   = INTENT_LABEL.get(intent, intent)
+        msg_prev  = message[:300] + "…" if len(message) > 300 else message
+        turns_tag = f"  ·  第{total_turns}輪" if total_turns > 1 else ""
 
         text = (
-            f"{action} ← {_escape(display_name)}\n"
+            f"{_escape(p_label)}{_escape(i_label)}\n"
+            f"👤 {_escape(display_name)}{_escape(turns_tag)}\n"
             f"{'─' * 20}\n"
-            f"{_escape(msg_preview)}\n"
-            f"{'─' * 20}"
-            f"{turns_line}\n"
-            f"[→ LINE OA 回覆]({LINE_OA_URL})"
+            f"{_escape(msg_prev)}\n"
+            f"{'─' * 20}\n"
+            f"[👉 LINE OA]({LINE_OA_URL})"
         )
 
         await bot.send_message(
@@ -74,19 +90,19 @@ async def notify_pre_form_filled(
     display_name: str,
     message: str,
 ) -> bool:
-    """預篩選表單回填通知 — 版本 A"""
+    """預篩選表單回填通知 — 版本 B"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
-
-        msg_preview = message[:300] + "…" if len(message) > 300 else message
+        msg_prev = message[:300] + "…" if len(message) > 300 else message
 
         text = (
-            f"📝 確認檔期 ← {_escape(display_name)}\n"
+            f"🟠【高優先】待確認檔期\n"
+            f"👤 {_escape(display_name)}\n"
             f"{'─' * 20}\n"
-            f"{_escape(msg_preview)}\n"
+            f"{_escape(msg_prev)}\n"
             f"{'─' * 20}\n"
             f"✅ Bot 已回「稍待確認」\n"
-            f"[→ LINE OA 傳完整表單]({LINE_OA_URL})"
+            f"[👉 LINE OA 傳完整表單]({LINE_OA_URL})"
         )
 
         await bot.send_message(
@@ -105,16 +121,17 @@ async def notify_form_submitted(
     display_name: str,
     form_content: str,
 ) -> bool:
-    """完整表單提交通知 — 版本 A"""
+    """完整表單提交通知 — 版本 B"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
         text = (
-            f"📋 新表單 ← {_escape(display_name)}\n"
+            f"🟠【高優先】新表單\n"
+            f"👤 {_escape(display_name)}\n"
             f"{'─' * 20}\n"
             f"{_escape(form_content[:600])}\n"
             f"{'─' * 20}\n"
-            f"[→ LINE OA 確認]({LINE_OA_URL})"
+            f"[👉 LINE OA 確認]({LINE_OA_URL})"
         )
 
         await bot.send_message(
@@ -133,18 +150,18 @@ async def notify_payment_received(
     display_name: str,
     message: str,
 ) -> bool:
-    """付款通知 — 版本 A"""
+    """付款通知 — 版本 B"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
-
-        msg_preview = message[:300] + "…" if len(message) > 300 else message
+        msg_prev = message[:300] + "…" if len(message) > 300 else message
 
         text = (
-            f"💰 確認付款 ← {_escape(display_name)}\n"
+            f"🟠【高優先】付款通知\n"
+            f"👤 {_escape(display_name)}\n"
             f"{'─' * 20}\n"
-            f"{_escape(msg_preview)}\n"
+            f"{_escape(msg_prev)}\n"
             f"{'─' * 20}\n"
-            f"[→ LINE OA 確認]({LINE_OA_URL})"
+            f"[👉 LINE OA 確認]({LINE_OA_URL})"
         )
 
         await bot.send_message(
@@ -160,22 +177,24 @@ async def notify_payment_received(
 
 
 async def notify_unanswered_alert(conversations: list) -> bool:
-    """逾時未回覆警報 — 版本 A 緊湊列表"""
+    """逾時未回覆警報 — 版本 B"""
     if not conversations:
         return True
     try:
         bot   = Bot(token=TELEGRAM_BOT_TOKEN)
         count = len(conversations)
 
-        lines = [f"⏰ {_escape(str(count))} 個對話等待超過 4 小時\n{'─' * 20}"]
+        lines = [f"⏰【逾時警報】{_escape(str(count))} 個對話等待超過 4 小時\n{'─' * 20}"]
         for c in conversations[:10]:
-            hrs      = c["waiting_hours"]
-            name     = _escape(c["display_name"])
-            msg_prev = _escape(c["message"][:60] + ("…" if len(c["message"]) > 60 else ""))
-            action   = ACTION_LABEL.get(c.get("intent", "other"), "❓")
-            lines.append(f"{action} ← {name}（{_escape(str(hrs))} 小時）\n「{msg_prev}」")
+            hrs     = c["waiting_hours"]
+            name    = _escape(c["display_name"])
+            i_label = _escape(INTENT_LABEL.get(c.get("intent", "other"), "待確認"))
+            msg_p   = _escape(c["message"][:60] + ("…" if len(c["message"]) > 60 else ""))
+            p       = c.get("priority", "normal")
+            p_e     = {"low": "🔵", "normal": "🟡", "high": "🟠", "urgent": "🔴"}.get(p, "🟡")
+            lines.append(f"{p_e} {name} — {i_label}（{_escape(str(hrs))}h）\n   「{msg_p}」")
 
-        lines.append(f"{'─' * 20}\n[→ LINE OA 回覆]({LINE_OA_URL})")
+        lines.append(f"{'─' * 20}\n[👉 LINE OA 回覆]({LINE_OA_URL})")
         text = "\n".join(lines)
 
         await bot.send_message(
@@ -184,25 +203,23 @@ async def notify_unanswered_alert(conversations: list) -> bool:
             parse_mode=ParseMode.MARKDOWN_V2,
             disable_web_page_preview=True,
         )
-        logger.info(f"逾時警報已送出：{count} 個對話")
         return True
-
     except Exception as e:
         logger.error(f"逾時警報發送失敗: {e}")
         return False
 
 
 async def notify_api_failure(error_msg: str) -> bool:
-    """系統異常通知（保留備用）"""
+    """系統異常通知"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
         status = _escape(_summarize_system_status(error_msg))
         text = (
-            f"⚠️ 系統異常\n"
+            f"⚠️【系統異常】\n"
             f"{'─' * 20}\n"
             f"{status}\n"
             f"{'─' * 20}\n"
-            f"Bot 已切換為等待語模式，所有訊息仍會轉人工"
+            f"所有訊息仍會轉人工處理"
         )
         await bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
@@ -217,10 +234,9 @@ async def notify_api_failure(error_msg: str) -> bool:
 
 
 async def send_daily_summary(stats: dict) -> bool:
-    """每日統計摘要（可選：設定定時任務呼叫）"""
+    """每日統計摘要"""
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
-
         text = (
             f"📊 昨日 LINE OA 統計\n"
             f"{'─' * 20}\n"
@@ -230,7 +246,6 @@ async def send_daily_summary(stats: dict) -> bool:
             f"📋 收到表單：{stats.get('forms_received', 0)}\n"
             f"💰 收到付款：{stats.get('payments_received', 0)}"
         )
-
         await bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
             text=text,
@@ -251,7 +266,6 @@ def _escape(text: str) -> str:
 
 
 def _summarize_system_status(raw_error: str) -> str:
-    """將系統錯誤摘要成短句"""
     error_text = (raw_error or "").lower()
     if "credit balance is too low" in error_text:
         return "Anthropic 點數不足"
