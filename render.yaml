@@ -9,8 +9,8 @@ services:
         sync: false          # 在 Render Dashboard 手動填入
       - key: LINE_CHANNEL_ACCESS_TOKEN
         sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
+      # - key: ANTHROPIC_API_KEY   # v2.0 已移除 Claude API，可選填或直接刪除
+      #   sync: false
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_CHAT_ID
@@ -19,8 +19,7 @@ services:
         sync: false
       - key: GOOGLE_CREDENTIALS_JSON
         sync: false          # 將 google_service_account.json 內容貼入此欄位
-      - key: CLAUDE_MODEL
-        value: claude-haiku-4-5
+      # - key: CLAUDE_MODEL   # v2.0 已移除
       - key: LOG_LEVEL
         value: info
       - key: HUMAN_TURN_THRESHOLD

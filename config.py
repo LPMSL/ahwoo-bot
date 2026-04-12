@@ -12,9 +12,9 @@ load_dotenv()
 LINE_CHANNEL_SECRET      = os.environ["LINE_CHANNEL_SECRET"]
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 
-# ── Anthropic Claude API ────────────────────────────────────────────────────
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
-CLAUDE_MODEL      = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")  # 快速省錢首選
+# ── Anthropic Claude API（v2.0 已移除 Claude 呼叫，保留可選避免舊 env var 報錯）──
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")   # 不再必填
+CLAUDE_MODEL      = os.getenv("CLAUDE_MODEL", "")         # 不再使用
 
 # ── Telegram Bot ────────────────────────────────────────────────────────────
 TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
