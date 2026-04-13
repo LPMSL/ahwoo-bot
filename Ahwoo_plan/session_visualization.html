@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahwoo Session Visualization</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --paper: #fffdf8;
+      --ink: #1f1a17;
+      --muted: #6d6258;
+      --line: #ded4c8;
+      --accent: #b85c38;
+      --accent-soft: #f3d3c4;
+      --green: #3a7d44;
+      --yellow: #d4a017;
+      --red: #a93f38;
+      --shadow: 0 18px 50px rgba(76, 53, 37, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Noto Sans TC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(184, 92, 56, 0.14), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(58, 125, 68, 0.12), transparent 25%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(246, 232, 221, 0.96));
+      border: 1px solid rgba(184, 92, 56, 0.18);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -60px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(184, 92, 56, 0.2), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(184, 92, 56, 0.1);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: Georgia, "Noto Serif TC", serif;
+      letter-spacing: 0.01em;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 52px);
+      margin-top: 16px;
+      max-width: 11ch;
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      max-width: 68ch;
+      font-size: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(31, 26, 23, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat b {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title small {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .timeline {
+      position: relative;
+      margin-left: 8px;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: linear-gradient(var(--accent-soft), rgba(184, 92, 56, 0.08));
+    }
+
+    .step {
+      position: relative;
+      padding: 0 0 18px 18px;
+    }
+
+    .step::before {
+      content: "";
+      position: absolute;
+      left: -24px;
+      top: 5px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 0 4px rgba(184, 92, 56, 0.08);
+    }
+
+    .step h3 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .done { background: rgba(58, 125, 68, 0.12); color: var(--green); }
+    .warn { background: rgba(212, 160, 23, 0.16); color: #8d6700; }
+    .risk { background: rgba(169, 63, 56, 0.12); color: var(--red); }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .node {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: linear-gradient(180deg, #fffefb, #f8f1e8);
+      min-height: 92px;
+    }
+
+    .node b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .arrow {
+      color: var(--accent);
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .artifacts {
+      display: grid;
+      gap: 12px;
+    }
+
+    .artifact {
+      border-radius: 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .artifact code {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      word-break: break-all;
+    }
+
+    .artifact b {
+      font-size: 15px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .metric-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .metric {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      background: #fff;
+    }
+
+    .metric strong {
+      font-size: 26px;
+      display: block;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .findings {
+      display: grid;
+      gap: 10px;
+    }
+
+    .finding {
+      border-left: 4px solid var(--accent);
+      background: rgba(184, 92, 56, 0.06);
+      border-radius: 0 16px 16px 0;
+      padding: 12px 14px;
+    }
+
+    .finding b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .next {
+      margin-top: 18px;
+      padding: 22px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(58, 125, 68, 0.12), rgba(255, 255, 255, 0.88));
+      border: 1px solid rgba(58, 125, 68, 0.22);
+    }
+
+    .next ol {
+      margin: 14px 0 0 18px;
+      padding: 0;
+    }
+
+    .next li {
+      margin-bottom: 10px;
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 960px) {
+      .stats,
+      .grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-row {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow">Session Snapshot</span>
+      <h1>這次 Session 正在做什麼</h1>
+      <p>
+        這個 session 的核心目標，是把 Ahwoo 官方帳號的真實客戶對話變成一條可重複執行的離線評測鏈：
+        從原始對話抽樣、匿名化、建立測試集，到重播目前 bot 的回覆邏輯，再輸出品質報表。
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <b>9,737</b>
+          <span>原始對話 CSV 檔案數</span>
+        </div>
+        <div class="stat">
+          <b>280</b>
+          <span>第一批已抽樣評測案例</span>
+        </div>
+        <div class="stat">
+          <b>1,305</b>
+          <span>第一批 replay turn 數</span>
+        </div>
+        <div class="stat">
+          <b>3 條</b>
+          <span>已打通的流程：抽樣 / replay / 報表</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="section-title">
+          <h2>流程時間線</h2>
+          <small>What Happened</small>
+        </div>
+        <div class="timeline">
+          <div class="step">
+            <span class="badge done">完成</span>
+            <h3>1. 盤點現有 bot 架構</h3>
+            <p>讀了 webhook、Claude 分析、Redis session、Google Sheets 紀錄流程，確認重播入口應該鎖定在 <code>analyze_message(...)</code>。</p>
+          </div>
+          <div class="step">
+            <span class="badge done">完成</span>
+            <h3>2. 建立評測資料集工具</h3>
+            <p>先做 Sheets / CSV 版本，後來再針對原始 raw folder 補了專用抽樣器，支援匿名化、single-turn、multi-turn、人工標註佇列。</p>
+          </div>
+          <div class="step">
+            <span class="badge done">完成</span>
+            <h3>3. 打通離線 replay</h3>
+            <p>完成 <code>observed</code> baseline replay，也完成 <code>current_bot</code> replay，在本地無 API 情境下走 fallback 分支。</p>
+          </div>
+          <div class="step">
+            <span class="badge warn">進行中</span>
+            <h3>4. 擴大全量 raw folder 抽樣</h3>
+            <p>已定位到少數慢檔案會拖垮全量抽樣，現在已補讀檔優化與慢檔跳過機制，下一步是把第一批 slice 擴成全量版本。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title">
+          <h2>資料流長什麼樣</h2>
+          <small>Pipeline</small>
+        </div>
+        <div class="flow">
+          <div class="flow-row">
+            <div class="node">
+              <b>Raw LINE 對話</b>
+              <span>每個客戶一個 CSV，位於實際資料夾</span>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <b>匿名化抽樣</b>
+              <span>遮罩姓名、電話、地址、後五碼，拆成 single / multi case</span>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <b>離線 replay</b>
+              <span>重播 observed 或 current_bot，檢查回覆品質</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="split">
+      <article class="card">
+        <div class="section-title">
+          <h2>這次已產出的東西</h2>
+          <small>Artifacts</small>
+        </div>
+        <div class="artifacts">
+          <div class="artifact">
+            <b>Raw 評測資料集 Slice 1</b>
+            <code>/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval_slice1</code>
+          </div>
+          <div class="artifact">
+            <b>Observed Replay 結果</b>
+            <code>/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval_slice1/replay_results.json</code>
+          </div>
+          <div class="artifact">
+            <b>Current Bot Replay 結果</b>
+            <code>/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval_slice1/replay_results_current_bot.json</code>
+          </div>
+          <div class="artifact">
+            <b>Current Bot Replay 報表</b>
+            <code>/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval_slice1/replay_report_current_bot.md</code>
+          </div>
+          <div class="artifact">
+            <b>人工標註佇列</b>
+            <code>/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval_slice1/annotation_queue.csv</code>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title">
+          <h2>第一批結果在說什麼</h2>
+          <small>Signals</small>
+        </div>
+        <div class="metric-list">
+          <div class="metric">
+            <strong>15.3%</strong>
+            <span>Observed replay 的 intent match rate。這裡低是因為 raw dataset 還是 <code>unknown</code> 標籤，代表還缺人工 gold label。</span>
+          </div>
+          <div class="metric">
+            <strong>28.7%</strong>
+            <span>Current bot 在 fallback 模式下的 needs_human match rate，說明現階段 fallback 太容易把真實訊息推去人工。</span>
+          </div>
+          <div class="metric">
+            <strong>122</strong>
+            <span>Current bot replay 被規則標記的 turn 數，主要集中在多行過長、句號、以及疑似價格承諾。</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="section-title">
+          <h2>中途遇到的卡點</h2>
+          <small>Blockers</small>
+        </div>
+        <div class="findings">
+          <div class="finding">
+            <b>Raw 檔案有極慢 case</b>
+            <span>少數 CSV 讀取時會極慢，曾出現單檔 300 秒級延遲，已改成 bytes decode 方式並加入慢檔跳過策略。</span>
+          </div>
+          <div class="finding">
+            <b>本地 Python 是 3.9</b>
+            <span><code>claude_handler.py</code> 原本使用 3.10 的型別語法，已補上 future annotations 相容處理。</span>
+          </div>
+          <div class="finding">
+            <b>本地沒有網路與 Anthropic key</b>
+            <span>因此 <code>current_bot</code> replay 目前只能反映 fallback 行為，而不是 live Claude 生成結果。</span>
+          </div>
+          <div class="finding">
+            <b>Telegram 模組不在本地 Python 環境</b>
+            <span>API 失敗通知原本會讓 replay 中斷，現在已改成通知載入失敗時略過，不影響評測流程。</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title">
+          <h2>目前這個 session 的判斷</h2>
+          <small>Current Read</small>
+        </div>
+        <div class="findings">
+          <div class="finding">
+            <b>工具鏈已經打通</b>
+            <span>現在不是停留在計畫階段，而是已經真的能從真實對話抽樣、重播、出報表。</span>
+          </div>
+          <div class="finding">
+            <b>最缺的是人工標註 baseline</b>
+            <span>目前 raw dataset 多數是 <code>unknown</code>，所以現階段報表更像「規則與 fallback 行為檢查」，還不是正式品質分數。</span>
+          </div>
+          <div class="finding">
+            <b>第一個優先修點很明確</b>
+            <span>先做高價值標註集，再針對高頻誤判補 intent 規則和 static replies，才會讓 replay 指標開始有決策價值。</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="next">
+      <span class="eyebrow">Next Move</span>
+      <h2>如果繼續這個 Session，下一步最合理的是</h2>
+      <ol>
+        <li>從 <code>annotation_queue.csv</code> 中先挑 100 筆高頻、高風險 case 做人工標註。</li>
+        <li>把這批標註資料接回 replay 報表，讓 intent / needs_human 有真正的 gold baseline。</li>
+        <li>依報表結果補 <code>knowledge_base.py</code> 的 FAQ、關鍵字與 handoff 規則。</li>
+        <li>再重新跑同一批 replay，看修正是否真的有效，而不是只靠主觀感覺調整。</li>
+      </ol>
+      <p class="footnote">
+        這個 HTML 是這次 session 的工作視覺化，不是對外頁面。目的不是美化，而是讓你一眼看懂「我們做到哪裡、卡在哪裡、下一步是什麼」。
+      </p>
+    </section>
+  </main>
+</body>
+</html>

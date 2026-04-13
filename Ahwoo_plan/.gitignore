@@ -1,0 +1,18 @@
+# 評測資料集（含顧客對話，不上傳）
+eval_datasets/
+
+# 原始資料
+*.csv
+*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+*.egg-info/
+
+# 系統
+.DS_Store
+*.log

@@ -4,11 +4,17 @@
 __pycache__/
 
 # 機密憑證（不上傳）
-credentials/
+Ahwoo_chatbot/credentials/
 *.json
 .env
 .env.*
-!.env.example
+!Ahwoo_chatbot/.env.example
+
+# 評測資料集（含顧客對話，不上傳）
+Ahwoo_plan/eval_datasets/
+*.csv
 
 # 本地開發
 *.log
+.venv/
+*.egg-info/
