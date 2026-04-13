@@ -5,8 +5,9 @@ session_handler.py — Redis 對話 session 持久化
 
 import json
 import logging
-import os
 from upstash_redis.asyncio import Redis
+
+import config
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,8 @@ def _get_redis() -> Redis:
     global _redis
     if _redis is None:
         _redis = Redis(
-            url=os.environ["UPSTASH_REDIS_REST_URL"],
-            token=os.environ["UPSTASH_REDIS_REST_TOKEN"],
+            url=config.UPSTASH_REDIS_REST_URL,
+            token=config.UPSTASH_REDIS_REST_TOKEN,
         )
     return _redis
 
