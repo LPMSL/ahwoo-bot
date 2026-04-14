@@ -22,10 +22,14 @@ TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT_ID   = os.environ["TELEGRAM_CHAT_ID"]   # Yvette 的 chat_id
 
 # ── Google Sheets ───────────────────────────────────────────────────────────
-GOOGLE_SHEET_ID           = os.environ["GOOGLE_SHEET_ID"]
+GOOGLE_SHEET_ID           = os.environ.get("GOOGLE_SHEET_ID", "")
 GOOGLE_CREDENTIALS_PATH   = os.getenv("GOOGLE_CREDENTIALS_PATH", "credentials/google_service_account.json")
 GOOGLE_CREDENTIALS_JSON   = os.getenv("GOOGLE_CREDENTIALS_JSON")   # Render 雲端部署用（JSON 字串）
 GOOGLE_SHEET_TAB          = os.getenv("GOOGLE_SHEET_TAB", "LINE對話記錄")
+
+# ── Upstash Redis ────────────────────────────────────────────────────────────
+UPSTASH_REDIS_REST_URL   = os.getenv("UPSTASH_REDIS_REST_URL", "")
+UPSTASH_REDIS_REST_TOKEN = os.getenv("UPSTASH_REDIS_REST_TOKEN", "")
 
 # ── App Settings ─────────────────────────────────────────────────────────────
 PORT              = int(os.getenv("PORT", 8000))

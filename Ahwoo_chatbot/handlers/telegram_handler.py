@@ -191,7 +191,7 @@ async def notify_unanswered_alert(conversations: list) -> bool:
             action   = ACTION_LABEL.get(c.get("intent", "other"), "❓")
             lines.append(f"{action} ← {name}（{_escape(str(hrs))} 小時）\n「{msg_prev}」")
 
-        lines.append(f"{'─' * 20}\n[→ LINE OA 回覆]({LINE_OA_URL})")
+        lines.append(f"{'─' * 20}\n[→ LINE OA 回覆](https://chat.line.biz/)")
         text = "\n".join(lines)
 
         await bot.send_message(
