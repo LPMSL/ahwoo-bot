@@ -32,7 +32,7 @@ from preset_messages import (
 )
 
 # ── 路徑預設值 ───────────────────────────────────────────────────────────────
-PROJECT_ROOT = Path("/Users/linstev/Documents/projects/Ahwoo-project")
+PROJECT_ROOT = Path.home() / "Documents/projects/Ahwoo-project"
 DEFAULT_CSV = (
     PROJECT_ROOT
     / "Ahwoo_plan"

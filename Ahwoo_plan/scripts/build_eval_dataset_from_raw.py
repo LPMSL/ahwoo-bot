@@ -13,8 +13,8 @@ from datetime import datetime
 from pathlib import Path
 
 
-DEFAULT_RAW_ROOT = Path("/Users/linstev/Documents/projects/data/raw/ahwoo_oa_chat_raw")
-DEFAULT_OUTPUT_DIR = Path("/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval")
+DEFAULT_RAW_ROOT = Path.home() / "Documents/projects/data/raw/ahwoo_oa_chat_raw"
+DEFAULT_OUTPUT_DIR = Path.home() / "Documents/projects/Ahwoo-project/Ahwoo_plan/eval_datasets/raw_eval"
 EXPECTED_HEADER = ["傳送者類型", "傳送者名稱", "傳送日期", "傳送時間", "內容"]
 MEDIA_MESSAGES = {"照片已傳送", "貼圖已傳送", "影片已傳送", "檔案已傳送"}
 from privacy_utils import stable_alias, mask_message

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-PROJECT_ROOT = Path("/Users/linstev/Documents/projects/Ahwoo-project")
+PROJECT_ROOT = Path.home() / "Documents/projects/Ahwoo-project"
 DEFAULT_DATASET_DIR = PROJECT_ROOT / "Ahwoo_plan" / "eval_datasets"
 
 

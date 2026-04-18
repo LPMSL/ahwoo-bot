@@ -12,10 +12,10 @@ from typing import Iterable
 
 
 # 這支腳本只允許寫入 Ahwoo_plan 目錄
-OUTPUT_DIR = Path("/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_plan")
-CSV_ROOT = Path("/Users/linstev/Documents/projects/data/raw/ahwoo_oa_chat_raw")
-KNOWLEDGE_BASE_PATH = Path("/Users/linstev/Documents/projects/Ahwoo-project/Ahwoo_chatbot/knowledge_base.py")
-HTML_DASHBOARD_PATH = Path("/Users/linstev/Documents/projects/Ahwoo-project/LINE_OA_分析儀表板.html")
+OUTPUT_DIR = Path.home() / "Documents/projects/Ahwoo-project/Ahwoo_plan"
+CSV_ROOT = Path.home() / "Documents/projects/data/raw/ahwoo_oa_chat_raw"
+KNOWLEDGE_BASE_PATH = Path.home() / "Documents/projects/Ahwoo-project/knowledge_base.py"
+HTML_DASHBOARD_PATH = Path.home() / "Documents/projects/Ahwoo-project/LINE_OA_分析儀表板.html"
 SUMMARY_PATH = OUTPUT_DIR / "summary.md"
 DASHBOARD_DIFF_PATH = OUTPUT_DIR / "dashboard_diff.md"
 

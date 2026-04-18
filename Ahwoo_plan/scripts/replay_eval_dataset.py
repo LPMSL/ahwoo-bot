@@ -20,7 +20,7 @@ from preset_messages import (
     match_reply,
 )
 
-PROJECT_ROOT = Path("/Users/linstev/Documents/projects/Ahwoo-project")
+PROJECT_ROOT = Path.home() / "Documents/projects/Ahwoo-project"
 DEFAULT_DATASET_DIR = PROJECT_ROOT / "Ahwoo_plan" / "eval_datasets"
 DEFAULT_SLICE = "raw_eval_slice2"
 PRICE_RE = re.compile(r"(?<![A-Za-z])(?:\d{2,5})(?:元|塊|NT|NT\$)?")

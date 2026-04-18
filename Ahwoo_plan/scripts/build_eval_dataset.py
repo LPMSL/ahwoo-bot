@@ -14,10 +14,10 @@ from pathlib import Path
 from typing import Any
 
 
-PROJECT_ROOT = Path("/Users/linstev/Documents/projects/Ahwoo-project")
+PROJECT_ROOT = Path.home() / "Documents/projects/Ahwoo-project"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "Ahwoo_plan" / "eval_datasets"
 DEFAULT_SHEET_TAB = os.getenv("GOOGLE_SHEET_TAB", "LINE對話記錄")
-DEFAULT_RAW_ROOT = Path("/Users/linstev/Documents/projects/data/raw/ahwoo_oa_chat_raw")
+DEFAULT_RAW_ROOT = Path.home() / "Documents/projects/data/raw/ahwoo_oa_chat_raw"
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
     "https://www.googleapis.com/auth/drive.readonly",

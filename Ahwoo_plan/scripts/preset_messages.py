@@ -23,10 +23,7 @@ from pathlib import Path
 from typing import Any
 
 # 預設 CSV 路徑
-DEFAULT_PRESET_CSV = Path(
-    "/Users/linstev/Documents/projects/data/raw/"
-    "LINE OA 預設訊息 - 預設訊息.csv"
-)
+DEFAULT_PRESET_CSV = Path.home() / "Documents/projects/data/raw/LINE OA 預設訊息 - 預設訊息.csv"
 
 # 預設訊息標題 → (gold_intent, gold_needs_human)
 PRESET_INTENT_MAP: dict[str, tuple[str, bool]] = {
