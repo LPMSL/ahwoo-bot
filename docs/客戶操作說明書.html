@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINE Chatbot 客戶操作說明書</title>
+  <style>
+    :root {
+      --green:    #06C755;
+      --green-dk: #04a344;
+      --tg-blue:  #229ED9;
+      --gray-50:  #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --text:     #111827;
+      --radius:   10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--gray-50);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--green) 0%, #00a63e 100%);
+      color: #fff;
+      padding: 56px 24px 48px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      padding: 4px 14px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -.01em;
+    }
+    .hero p {
+      font-size: 15px;
+      opacity: .88;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── SECTION ── */
+    section {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      padding: 32px 28px;
+      margin-bottom: 24px;
+    }
+
+    /* ── HEADINGS ── */
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin: 22px 0 10px;
+      padding-left: 12px;
+      border-left: 3px solid var(--green);
+    }
+
+    /* ── LISTS ── */
+    ol, ul {
+      padding-left: 22px;
+    }
+    li { margin-bottom: 6px; }
+    li li { margin-top: 4px; margin-bottom: 4px; }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin: 12px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      background: var(--gray-100);
+      color: var(--gray-600);
+      font-weight: 600;
+      text-align: left;
+      padding: 9px 14px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--gray-200);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    .badge-free {
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+    }
+    .badge-paid {
+      background: #fef9c3;
+      color: #854d0e;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+    }
+
+    /* ── CODE ── */
+    code {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 13px;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    pre {
+      background: var(--gray-800);
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.7;
+      font-family: "SF Mono", "Fira Code", monospace;
+      margin: 14px 0;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    /* ── CALLOUTS ── */
+    .callout {
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .callout-icon { flex-shrink: 0; font-size: 18px; line-height: 1.4; }
+    .callout-warn  { background: #fffbeb; border: 1px solid #fde68a; }
+    .callout-info  { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .callout-tip   { background: #f0fdf4; border: 1px solid #bbf7d0; }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background .15s;
+    }
+    .checklist li:hover { background: var(--gray-50); }
+    .checklist .check-box {
+      width: 20px; height: 20px;
+      border: 2px solid var(--gray-400);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── FAQ ── */
+    .faq-item {
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 6px;
+    }
+    .faq-a { color: var(--gray-600); font-size: 14px; }
+
+    /* ── FEATURE CARDS ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .feature-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .feature-card .icon { font-size: 24px; margin-bottom: 8px; }
+    .feature-card .title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .feature-card .desc { font-size: 13px; color: var(--gray-600); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--gray-400);
+      padding: 24px 0;
+    }
+    footer a { color: var(--green); text-decoration: none; }
+
+    b, strong { font-weight: 600; }
+    a { color: var(--green); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Client Setup Guide</div>
+  <h1>LINE Chatbot 客戶操作說明書</h1>
+  <p>設定過程約需 30–60 分鐘，完成後即可 24 小時自動運作。</p>
+</div>
+
+<div class="container">
+
+  <!-- 你會得到什麼 -->
+  <section>
+    <h2>你會得到什麼</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">💬</div>
+        <div class="title">LINE 自動回覆</div>
+        <div class="desc">顧客傳訊息，Bot 立刻自動回覆，不漏接任何詢問。</div>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔔</div>
+        <div class="title">Telegram 即時通知</div>
+        <div class="desc">需要人工處理時，推播通知到你的 Telegram。</div>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <div class="title">Google Sheets 記錄</div>
+        <div class="desc">全程對話自動記錄，可接 Looker Studio 做報表。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 你需要準備的帳號 -->
+  <section>
+    <h2>你需要準備的帳號</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>服務</th><th>說明</th><th>費用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LINE 官方帳號</strong><br><span style="font-size:12px;color:#6b7280">Messaging API</span></td>
+            <td>Bot 的主要對話管道</td>
+            <td><span class="badge-free">免費</span></td>
+          </tr>
+          <tr>
+            <td><strong>Telegram</strong></td>
+            <td>接收人工介入通知</td>
+            <td><span class="badge-free">免費</span></td>
+          </tr>
+          <tr>
+            <td><strong>Google 帳號</strong><br><span style="font-size:12px;color:#6b7280">Google Sheets</span></td>
+            <td>記錄所有對話</td>
+            <td><span class="badge-free">免費</span></td>
+          </tr>
+          <tr>
+            <td><strong>Render 伺服器</strong></td>
+            <td>由我們代管，你不需要操作</td>
+            <td><span class="badge-paid">$7 USD/月</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section>
+    <h2><span class="step-num">1</span>設定 LINE 官方帳號</h2>
+
+    <h3>1-1 開通 Messaging API</h3>
+    <ol>
+      <li>前往 <a href="https://developers.line.biz/" target="_blank">LINE Developers Console</a>，用你的 LINE 帳號登入</li>
+      <li>點選 <strong>Create a Provider</strong>（輸入你的品牌名稱）</li>
+      <li>點選 <strong>Create a Messaging API channel</strong></li>
+      <li>填寫：
+        <ul>
+          <li>Channel name：你的品牌名稱</li>
+          <li>Channel description：簡短說明</li>
+          <li>Category / Subcategory：選擇最接近的分類</li>
+        </ul>
+      </li>
+      <li>點選 <strong>Create</strong></li>
+    </ol>
+
+    <h3>1-2 取得金鑰</h3>
+    <p>建立完成後：</p>
+    <ol>
+      <li>進入剛建立的 Channel → <strong>Basic settings</strong> 頁籤<br>找到 <strong>Channel Secret</strong> → 點 <strong>Copy</strong> 複製並記下來</li>
+      <li>切換到 <strong>Messaging API</strong> 頁籤<br>滑到最下方 <strong>Channel access token</strong> → 點 <strong>Issue</strong><br>複製這串 Token 並記下來</li>
+    </ol>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <span>這兩組資訊非常重要，請妥善保管，<strong>不要分享給不相關的人</strong>，也不要截圖上傳到公開平台。</span>
+    </div>
+
+    <h3>1-3 確認設定</h3>
+    <p>在 <strong>Messaging API</strong> 頁籤確認以下設定：</p>
+    <ul>
+      <li><strong>Use webhook</strong>：請開啟</li>
+      <li><strong>Auto-reply messages</strong>：請<strong>關閉</strong>（否則會和 Bot 衝突）</li>
+      <li><strong>Greeting messages</strong>：可依喜好開啟或關閉</li>
+    </ul>
+  </section>
+
+  <!-- STEP 2 -->
+  <section>
+    <h2><span class="step-num">2</span>設定 Telegram 接收通知</h2>
+    <p style="margin-bottom:12px;color:#4b5563;">Telegram 是你接收「需要人工回覆」通知的工具，免費且即時。</p>
+
+    <h3>2-1 建立 Telegram Bot</h3>
+    <ol>
+      <li>在 Telegram 搜尋 <strong>@BotFather</strong>，點選開始對話</li>
+      <li>傳送 <code>/newbot</code></li>
+      <li>依指示輸入 Bot 名稱和 Username（Username 必須以 <code>bot</code> 結尾，例如 <code>YourShop_bot</code>）</li>
+      <li>建立成功後會收到一串 <strong>Token</strong>，格式如：<code>123456789:ABCDefGHI...</code></li>
+      <li>複製這串 Token 並記下來</li>
+    </ol>
+
+    <h3>2-2 取得你的 Chat ID</h3>
+    <ol>
+      <li>在 Telegram 搜尋 <strong>@userinfobot</strong>，點選開始並傳送任意訊息</li>
+      <li>它會回覆你的 <strong>ID 數字</strong>（例如 <code>123456789</code>）</li>
+      <li>記下這個數字</li>
+    </ol>
+
+    <h3>2-3 啟動 Bot</h3>
+    <p>找到你剛建立的 Bot（搜尋你取的 Username），點選 <strong>Start</strong> 開始對話。</p>
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <span>必須先點 Start 開始對話，Bot 才能傳訊息給你。這個步驟很容易忘記。</span>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section>
+    <h2><span class="step-num">3</span>建立 Google Sheets 記錄表</h2>
+
+    <h3>3-1 建立試算表</h3>
+    <ol>
+      <li>開啟 <a href="https://sheets.google.com" target="_blank">Google Sheets</a>，建立一份新試算表</li>
+      <li>將試算表命名為你想要的名稱（例如「LINE對話記錄」）</li>
+      <li>複製試算表的 URL，取出其中的 Sheet ID：</li>
+    </ol>
+    <pre><code>https://docs.google.com/spreadsheets/d/【這一段就是 Sheet ID】/edit</code></pre>
+
+    <h3>3-2 共享給系統帳號</h3>
+    <p>我們會提供你一個 <strong>Service Account Email</strong>（格式如 <code>xxx@project.iam.gserviceaccount.com</code>）</p>
+    <ol>
+      <li>在試算表右上角點 <strong>共用</strong></li>
+      <li>輸入該 Email，權限設為<strong>編輯者</strong></li>
+      <li>點 <strong>傳送</strong></li>
+    </ol>
+  </section>
+
+  <!-- STEP 4 -->
+  <section>
+    <h2><span class="step-num">4</span>將資訊交給我們</h2>
+    <p style="margin-bottom:12px;">請將以下資訊提供給我們，我們幫你完成部署：</p>
+    <pre><code>LINE_CHANNEL_SECRET       = （Step 1-2 取得）
+LINE_CHANNEL_ACCESS_TOKEN = （Step 1-2 取得）
+LINE_OA_BASIC_ID          = 你的 LINE OA Basic ID（格式：@xxx）
+
+TELEGRAM_BOT_TOKEN        = （Step 2-1 取得）
+TELEGRAM_CHAT_ID          = （Step 2-2 取得）
+
+GOOGLE_SHEET_ID           = （Step 3-1 取得）
+GOOGLE_SHEET_TAB          = LINE對話記錄（或你自訂的工作表名稱）</code></pre>
+    <div class="callout callout-warn">
+      <span class="callout-icon">🔒</span>
+      <span>請使用<strong>私訊或加密方式</strong>傳送，避免在公開群組或 Email 主旨等公開管道分享這些金鑰。</span>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section>
+    <h2><span class="step-num">5</span>完成設定後的確認</h2>
+    <p style="margin-bottom:14px;">我們完成部署後，請做以下驗收確認：</p>
+    <ul class="checklist">
+      <li><span class="check-box"></span><span>在你的 LINE 官方帳號傳送一則測試訊息</span></li>
+      <li><span class="check-box"></span><span>確認 Bot 有自動回覆</span></li>
+      <li><span class="check-box"></span><span>傳送「我要預約」，確認 Telegram 有收到通知</span></li>
+      <li><span class="check-box"></span><span>打開 Google Sheets，確認對話有被記錄下來</span></li>
+    </ul>
+    <div class="callout callout-tip">
+      <span class="callout-icon">✅</span>
+      <span>四項都通過就代表部署成功，Bot 已可正式上線！</span>
+    </div>
+  </section>
+
+  <!-- 日常使用說明 -->
+  <section>
+    <h2>日常使用說明</h2>
+
+    <h3>何時會收到 Telegram 通知？</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>情況</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>顧客填寫預訂資訊</td><td>顧客提交了預約表單內容</td></tr>
+          <tr><td>對話超過設定輪數</td><td>超過 10 輪對話仍未解決</td></tr>
+          <tr><td>顧客表示已付款</td><td>Bot 偵測到付款確認語句</td></tr>
+          <tr><td>緊急優先訊息</td><td>Bot 判斷需要立即人工介入</td></tr>
+          <tr><td>逾時未回覆警報</td><td>顧客等待超過 4 小時未獲回覆</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>如何接手人工回覆？</h3>
+    <p>收到 Telegram 通知後，直接進入你的 <strong>LINE 官方帳號管理介面</strong>，找到該顧客手動回覆即可。Bot 不會和你的手動回覆衝突。</p>
+
+    <h3>如何調整 Bot 的回覆語氣或知識庫？</h3>
+    <p>請聯絡我們調整，通常 <strong>1–2 個工作天</strong>內完成更新。</p>
+  </section>
+
+  <!-- 費用說明 -->
+  <section>
+    <h2>費用說明</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>項目</th><th>月費</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>伺服器（Render Starter）</td><td>$7 USD / 月</td></tr>
+          <tr><td>Claude AI 使用費</td><td>約 $1–3 USD / 月（依訊息量）</td></tr>
+          <tr><td>LINE / Telegram / Google Sheets</td><td><span class="badge-free">免費</span></td></tr>
+          <tr>
+            <td><strong>合計</strong></td>
+            <td><strong>約 $8–10 USD / 月</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <span>費用以美元計，每月初結算。Claude AI 費用依實際訊息量浮動，一般店家每月約 $1–2 USD。</span>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <h2>常見問題</h2>
+    <div class="faq-item">
+      <div class="faq-q">Q：Bot 有時候沒有回覆，是哪裡出問題？</div>
+      <div class="faq-a">請先確認 LINE 官方帳號的 Webhook 是否正常，也可以通知我們協助排查。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q：我可以修改 Bot 的自動回覆內容嗎？</div>
+      <div class="faq-a">可以，請告知我們想修改的內容，由我們更新知識庫。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q：Google Sheets 的資料可以做報表嗎？</div>
+      <div class="faq-a">可以，我們可以協助你接上 Looker Studio 儀表板，視覺化顯示顧客對話分析。</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Q：未來可以新增更多功能嗎？</div>
+      <div class="faq-a">可以討論，常見需求包括：預約表單整合、付款連結發送、多語言支援等。</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  如有任何問題，請直接聯絡 <a href="#">Stev</a>。
+</footer>
+
+</body>
+</html>

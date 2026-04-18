@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>嗷嗚工作室 × AI 客服助理 — 專案提案</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --card: #f5f5f5;
+      --ring: #606060;
+      --input: #e0e0e0;
+      --muted: #d9d9d9;
+      --accent: #c0c0c0;
+      --border: #d0d0d0;
+      --radius: 0.35rem;
+      --chart-1: #606060;
+      --chart-2: #476666;
+      --chart-3: #909090;
+      --chart-4: #a8a8a8;
+      --chart-5: #c0c0c0;
+      --popover: #f5f5f5;
+      --primary: #606060;
+      --sidebar: #eaeaea;
+      --font-mono: 'Fira Code', monospace;
+      --font-sans: 'Montserrat', 'Noto Sans TC', sans-serif;
+      --secondary: #e0e0e0;
+      --background: #f0f0f0;
+      --font-serif: Georgia, serif;
+      --foreground: #333333;
+      --destructive: #cc3333;
+      --shadow-color: hsl(0 0% 20% / 0.1);
+      --sidebar-ring: #606060;
+      --sidebar-accent: #c0c0c0;
+      --sidebar-border: #d0d0d0;
+      --card-foreground: #333333;
+      --sidebar-primary: #606060;
+      --muted-foreground: #666666;
+      --accent-foreground: #333333;
+      --popover-foreground: #333333;
+      --primary-foreground: #ffffff;
+      --sidebar-foreground: #333333;
+      --secondary-foreground: #333333;
+      --destructive-foreground: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 80px 0; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--foreground);
+      color: var(--primary-foreground);
+      padding: 64px 0 72px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(71,102,102,.3) 0%, transparent 70%);
+      top: -200px; right: -150px;
+      pointer-events: none;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(160,160,160,.12) 0%, transparent 70%);
+      bottom: -150px; left: -100px;
+      pointer-events: none;
+    }
+    .header-inner { position: relative; z-index: 1; }
+    .header-tag {
+      display: inline-block;
+      background: rgba(71,102,102,.25);
+      color: var(--chart-4);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(71,102,102,.4);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--primary-foreground);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .header-sub {
+      font-size: 17px;
+      font-weight: 300;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 32px;
+      max-width: 540px;
+    }
+    .header-meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .header-meta span {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: rgba(255,255,255,.4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      color: var(--chart-2);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.3;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--muted-foreground);
+      max-width: 580px;
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+      margin: 0;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card.warn {
+      border-color: rgba(71,102,102,.4);
+      background: rgba(71,102,102,.05);
+    }
+    .stat-card.crit {
+      border-color: rgba(204,51,51,.3);
+      background: rgba(204,51,51,.04);
+    }
+    .stat-num {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+    .stat-card.warn .stat-num { color: var(--chart-2); }
+    .stat-card.crit .stat-num { color: var(--destructive); }
+    .stat-label {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted-foreground);
+      line-height: 1.55;
+    }
+    .stat-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      font-family: var(--font-sans);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--radius);
+    }
+    .stat-card.warn .stat-badge {
+      background: rgba(71,102,102,.12);
+      color: var(--chart-2);
+    }
+    .stat-card.crit .stat-badge {
+      background: rgba(204,51,51,.1);
+      color: var(--destructive);
+    }
+
+    /* ── PROBLEM ROWS ── */
+    .problem-list { display: flex; flex-direction: column; gap: 12px; }
+    .problem-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .problem-icon {
+      width: 38px; height: 38px;
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .problem-icon.orange { background: rgba(71,102,102,.1); }
+    .problem-icon.red    { background: rgba(204,51,51,.08); }
+    .problem-icon.amber  { background: rgba(96,96,96,.08); }
+    .problem-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .problem-desc {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--muted-foreground);
+      line-height: 1.7;
+    }
+    .problem-desc strong { color: var(--foreground); font-weight: 500; }
+
+    /* ── DELAY BAR ── */
+    .delay-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      margin-top: 16px;
+    }
+    .delay-title {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+    }
+    .delay-rows { display: flex; flex-direction: column; gap: 11px; }
+    .delay-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 52px;
+      align-items: center;
+      gap: 12px;
+    }
+    .delay-row-label {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted-foreground);
+      text-align: right;
+    }
+    .delay-bar-wrap {
+      height: 8px;
+      background: var(--muted);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .delay-bar {
+      height: 100%;
+      border-radius: 4px;
+    }
+    .bar-green  { background: var(--chart-2); }
+    .bar-amber  { background: var(--chart-3); }
+    .bar-orange { background: var(--chart-1); }
+    .bar-red    { background: var(--destructive); }
+    .bar-gray   { background: var(--chart-5); }
+    .delay-pct {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    /* ── GAP TOP LIST ── */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .gap-pill {
+      background: var(--sidebar);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .gap-text {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--foreground);
+    }
+    .gap-count {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--muted-foreground);
+      background: var(--card);
+      padding: 2px 8px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    /* ── FEATURE GRID ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .feature-card.highlight {
+      border-color: var(--chart-2);
+      border-width: 1px;
+      background: rgba(71,102,102,.04);
+    }
+    .feat-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius);
+      background: var(--sidebar);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .feature-card.highlight .feat-icon {
+      background: rgba(71,102,102,.1);
+      border-color: rgba(71,102,102,.25);
+    }
+    .feat-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      letter-spacing: -0.01em;
+    }
+    .feat-desc {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--muted-foreground);
+      line-height: 1.65;
+    }
+    .feat-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 3px 9px;
+      border-radius: var(--radius);
+      background: var(--secondary);
+      color: var(--chart-1);
+      margin-top: auto;
+    }
+    .feat-tag.orange {
+      background: rgba(71,102,102,.12);
+      color: var(--chart-2);
+    }
+
+    /* ── ROADMAP ── */
+    .roadmap { display: flex; flex-direction: column; gap: 0; }
+    .roadmap-item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0;
+      position: relative;
+    }
+    .roadmap-left {
+      padding: 0 28px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      position: relative;
+    }
+    .roadmap-left::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 24px;
+      bottom: -24px;
+      width: 1px;
+      background: var(--border);
+    }
+    .roadmap-item:last-child .roadmap-left::after { display: none; }
+    .roadmap-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--background);
+      position: absolute;
+      right: -5px;
+      top: 9px;
+    }
+    .roadmap-dot.priority { background: var(--chart-2); }
+    .roadmap-phase {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+      margin-top: 4px;
+    }
+    .roadmap-right { padding: 0 0 36px 32px; }
+    .roadmap-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+    .roadmap-card.priority {
+      border-color: rgba(71,102,102,.4);
+      background: rgba(71,102,102,.04);
+    }
+    .roadmap-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .roadmap-icon { font-size: 17px; }
+    .roadmap-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      letter-spacing: -0.01em;
+    }
+    .roadmap-effect {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--muted-foreground);
+      line-height: 1.75;
+    }
+    .roadmap-effect strong { color: var(--foreground); font-weight: 500; }
+    .roadmap-impact {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 12px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--chart-2);
+      background: rgba(71,102,102,.1);
+      padding: 3px 10px;
+      border-radius: var(--radius);
+    }
+
+    /* ── SUMMARY ── */
+    .summary-box {
+      background: var(--foreground);
+      color: var(--primary-foreground);
+      border-radius: var(--radius);
+      padding: 44px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .summary-box::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(71,102,102,.2) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      pointer-events: none;
+    }
+    .summary-box h2 {
+      color: var(--primary-foreground);
+      margin-bottom: 24px;
+    }
+    .summary-points {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .summary-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: rgba(255,255,255,.65);
+      line-height: 1.7;
+    }
+    .summary-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--chart-2);
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+    .summary-point strong { color: var(--primary-foreground); font-weight: 500; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--sidebar);
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-brand {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      letter-spacing: -0.01em;
+    }
+    .footer-brand span {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--muted-foreground);
+      font-weight: 400;
+      margin-top: 3px;
+    }
+    .footer-contact {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted-foreground);
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      section { padding: 56px 0; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .roadmap-item { grid-template-columns: 80px 1fr; }
+      .gap-grid { grid-template-columns: 1fr; }
+      .summary-box { padding: 28px 24px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-contact { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="container header-inner">
+    <div class="header-tag">專案提案 · 2026 年 4 月</div>
+    <h1>嗷嗚工作室<br/>AI 客服助理計畫</h1>
+    <p class="header-sub">透過數據分析與智能自動化，讓您把時間花在真正需要人味的地方。</p>
+    <div class="header-meta">
+      <span>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        2026 年 4 月 18 日
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        呈交給：嗷嗚工作室
+      </span>
+      <span>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        基於 40,335 則真實訊息分析
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ SECTION 1：發現的問題 ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">01 · 數據揭示的現況</div>
+    <h2>您的顧客，正在等待</h2>
+    <p class="section-desc">我們分析了近期 9,738 則 LINE 對話訊息，發現幾個值得正視的數字。</p>
+
+    <div class="stat-grid">
+      <div class="stat-card crit">
+        <div class="stat-badge">嚴重</div>
+        <div class="stat-num">16.2</div>
+        <div class="stat-label">小時<br/>顧客訊息平均等待時間（中位數）</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-badge">需注意</div>
+        <div class="stat-num">32.5<small style="font-size:.5em">%</small></div>
+        <div class="stat-label">的訊息超過 24 小時<br/>才收到回覆</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-badge">需注意</div>
+        <div class="stat-num">989</div>
+        <div class="stat-label">則訊息<br/>從未獲得任何回覆</div>
+      </div>
+    </div>
+
+    <!-- 回覆延遲分布 -->
+    <div class="delay-section">
+      <div class="delay-title">回覆延遲分布（共 40,335 則訊息）</div>
+      <div class="delay-rows">
+        <div class="delay-row">
+          <div class="delay-row-label">1 小時內</div>
+          <div class="delay-bar-wrap"><div class="delay-bar bar-green" style="width:19.79%"></div></div>
+          <div class="delay-pct">19.8%</div>
+        </div>
+        <div class="delay-row">
+          <div class="delay-row-label">1–4 小時</div>
+          <div class="delay-bar-wrap"><div class="delay-bar bar-amber" style="width:8.75%"></div></div>
+          <div class="delay-pct">8.8%</div>
+        </div>
+        <div class="delay-row">
+          <div class="delay-row-label">4–24 小時</div>
+          <div class="delay-bar-wrap"><div class="delay-bar bar-orange" style="width:36.49%"></div></div>
+          <div class="delay-pct">36.5%</div>
+        </div>
+        <div class="delay-row">
+          <div class="delay-row-label">&gt; 24 小時</div>
+          <div class="delay-bar-wrap"><div class="delay-bar bar-red" style="width:32.52%"></div></div>
+          <div class="delay-pct">32.5%</div>
+        </div>
+        <div class="delay-row">
+          <div class="delay-row-label">從未回覆</div>
+          <div class="delay-bar-wrap"><div class="delay-bar bar-gray" style="width:2.45%"></div></div>
+          <div class="delay-pct">2.5%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 問題清單 -->
+    <div class="problem-list" style="margin-top:28px;">
+      <div class="problem-row">
+        <div class="problem-icon orange">📊</div>
+        <div>
+          <div class="problem-title">儀表板顯示的數字與實際不符</div>
+          <div class="problem-desc">LINE OA 儀表板顯示「1 小時內回覆：<strong>64 則</strong>」，但實際數據是 <strong>7,985 則</strong>。儀表板統計的是「對話」數，而非「訊息」數，導致管理者看到的效能遠比實際悲觀，很難做出正確的資源分配決策。</div>
+        </div>
+      </div>
+      <div class="problem-row">
+        <div class="problem-icon red">🕳️</div>
+        <div>
+          <div class="problem-title">57% 的訊息沒有自動回覆機制</div>
+          <div class="problem-desc">目前 Bot 命中率僅 <strong>42.36%</strong>，也就是說每 10 則訊息，有超過 5 則需要人工處理。最常見的缺口訊息幾乎都是簡單的致謝：「好的謝謝」（131 次）、「謝謝您」（84 次）、「謝謝你」（64 次）——這些本可讓系統自動處理。</div>
+        </div>
+      </div>
+      <div class="problem-row">
+        <div class="problem-icon amber">⏰</div>
+        <div>
+          <div class="problem-title">人工回覆壓力集中在特定時段</div>
+          <div class="problem-desc">顧客訊息的高峰時段與日常工作時間高度重疊，業主需要一直待在手機前監看 LINE，才能維持合理的回覆速度。<strong>長期下來，人力成本與心理負擔都相當高。</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gap top list -->
+    <div style="margin-top:28px;">
+      <div class="section-label" style="margin-bottom:12px;">最常見的「Bot 沒接到」訊息 Top 6</div>
+      <div class="gap-grid">
+        <div class="gap-pill"><span class="gap-text">「好的謝謝」</span><span class="gap-count">131 次</span></div>
+        <div class="gap-pill"><span class="gap-text">「謝謝您」</span><span class="gap-count">84 次</span></div>
+        <div class="gap-pill"><span class="gap-text">「謝謝你」</span><span class="gap-count">64 次</span></div>
+        <div class="gap-pill"><span class="gap-text">「好的！」</span><span class="gap-count">62 次</span></div>
+        <div class="gap-pill"><span class="gap-text">「不好意思」</span><span class="gap-count">58 次</span></div>
+        <div class="gap-pill"><span class="gap-text">表情符號訊息</span><span class="gap-count">56 次</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ SECTION 2：BOT 已在做什麼 ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">02 · 目前 BOT 能做什麼</div>
+    <h2>已經在幫您處理的事</h2>
+    <p class="section-desc">AI 客服助理目前已上線運作，以下是它每天默默在做的工作。</p>
+
+    <div class="feature-grid">
+      <div class="feature-card highlight">
+        <div class="feat-icon">💬</div>
+        <div class="feat-title">12 類 FAQ 自動回覆</div>
+        <div class="feat-desc">宅配政策、外燴諮詢、取貨地址與時段、付款方式、蛋糕尺寸、口味、加購配件、問候、致謝……顧客最常問的問題，幾乎秒回。</div>
+        <div class="feat-tag orange">每天節省估計 2–3 小時</div>
+      </div>
+
+      <div class="feature-card highlight">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">兩段式訂購表單自動推送</div>
+        <div class="feat-desc">第一段：預篩選（項目 + 日期）→ 您確認檔期後 → 第二段：完整蛋糕表單（11 個欄位）。全程由 Bot 引導，不需您手動發送。</div>
+        <div class="feat-tag orange">減少訂單漏接風險</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">📱</div>
+        <div class="feat-title">Telegram 即時通知（5 種格式）</div>
+        <div class="feat-desc">顧客確認檔期、提交表單、回報付款五碼、提出客製需求、或有抱怨取消——每種情境都有專屬格式通知您，點一下就跳到該對話。</div>
+        <div class="feat-tag">4 小時未回自動提醒</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">對話全自動寫入 Google Sheets</div>
+        <div class="feat-desc">每一則訊息都會記錄：時間、顧客 ID、訊息內容、意圖分類、是否轉人工、回覆內容⋯⋯共 18 個欄位，完整建立您的顧客數據庫。</div>
+        <div class="feat-tag">資料不再只存在 LINE 裡</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-title">24 小時對話記憶</div>
+        <div class="feat-desc">同一位顧客在 24 小時內的對話，Bot 都記得。不會問重複的問題，也不會忘記顧客剛才說過的需求。</div>
+        <div class="feat-tag">對話更流暢自然</div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feat-icon">🎨</div>
+        <div class="feat-title">品牌語氣一致</div>
+        <div class="feat-desc">基於 9,738 筆您過去的真實對話訓練，Bot 的回覆語氣、用字習慣、句尾標點（包含您招牌的「.ᐟ」）都忠實呈現您的風格。</div>
+        <div class="feat-tag">顧客感受不到機器感</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ SECTION 3：開發藍圖 ══ -->
+<section>
+  <div class="container">
+    <div class="section-label">03 · 開發藍圖</div>
+    <h2>接下來，可以更進一步</h2>
+    <p class="section-desc">以下功能已完成前期設計，等待實作。每一項都直接對應您目前的痛點。</p>
+
+    <div class="roadmap">
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot priority"></div>
+          <div class="roadmap-phase">第一優先</div>
+        </div>
+        <div class="roadmap-right">
+          <div class="roadmap-card priority">
+            <div class="roadmap-head">
+              <span class="roadmap-icon">📅</span>
+              <span class="roadmap-title">Google Calendar 名額即時查詢</span>
+            </div>
+            <div class="roadmap-effect">
+              目前顧客問「X 月 X 日有檔期嗎？」您必須親自確認行事曆再回覆。<br/>
+              整合後，Bot 能<strong>直接查詢您的 Google Calendar</strong>，即時回答「那天有名額」或「那天已滿，最近有空的日期是⋯」
+            </div>
+            <div class="roadmap-impact">✦ 預估消除 30% 的人工回覆需求</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot priority"></div>
+          <div class="roadmap-phase">第一優先</div>
+        </div>
+        <div class="roadmap-right">
+          <div class="roadmap-card priority">
+            <div class="roadmap-head">
+              <span class="roadmap-icon">💰</span>
+              <span class="roadmap-title">正確定價資料庫</span>
+            </div>
+            <div class="roadmap-effect">
+              目前若顧客詢問價格，AI 有時會自行推測，給出<strong>不正確的報價</strong>。<br/>
+              建立定價資料庫後，各尺寸、口味、客製加價的報價都會精準無誤，絕不亂猜。
+            </div>
+            <div class="roadmap-impact">✦ 消除因誤報價格產生的糾紛</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第二階段</div>
+        </div>
+        <div class="roadmap-right">
+          <div class="roadmap-card">
+            <div class="roadmap-head">
+              <span class="roadmap-icon">📝</span>
+              <span class="roadmap-title">候補名單機制</span>
+            </div>
+            <div class="roadmap-effect">
+              熱門日期額滿時，Bot 自動詢問顧客是否願意候補，並記錄下來。<br/>
+              有人取消或新增名額時，<strong>自動發訊通知候補顧客</strong>——不漏單、不需您手動追蹤。
+            </div>
+            <div class="roadmap-impact">✦ 減少因額滿流失的潛在訂單</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第二階段</div>
+        </div>
+        <div class="roadmap-right">
+          <div class="roadmap-card">
+            <div class="roadmap-head">
+              <span class="roadmap-icon">💛</span>
+              <span class="roadmap-title">長期顧客記憶</span>
+            </div>
+            <div class="roadmap-effect">
+              目前記憶只維持 24 小時。升級後，回頭客的<strong>口味偏好、過去訂單、特殊需求</strong>都能跨天保留。<br/>
+              Bot 可以說「上次您訂的是草莓 6 吋，這次還是一樣嗎？」
+            </div>
+            <div class="roadmap-impact">✦ 提升回頭客的個人化體驗</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="roadmap-left">
+          <div class="roadmap-dot"></div>
+          <div class="roadmap-phase">第三階段</div>
+        </div>
+        <div class="roadmap-right">
+          <div class="roadmap-card">
+            <div class="roadmap-head">
+              <span class="roadmap-icon">⭐</span>
+              <span class="roadmap-title">取貨後自動感謝 + 評價邀請</span>
+            </div>
+            <div class="roadmap-effect">
+              顧客取貨後，Bot 在適當時機<strong>自動發送感謝訊息</strong>，順帶邀請分享蛋糕照片或 Google 評價。<br/>
+              不打擾、不生硬——延續您溫暖的品牌形象，同時建立口碑素材。
+            </div>
+            <div class="roadmap-impact">✦ 系統性累積 IG 素材與好評</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ SUMMARY ══ -->
+<section style="padding-bottom:80px;">
+  <div class="container">
+    <div class="summary-box">
+      <h2>總結</h2>
+      <div class="summary-points">
+        <div class="summary-point">
+          <div class="summary-dot"></div>
+          <div>您的顧客平均等待 <strong>16 小時以上</strong>，每天有接近 1,000 則訊息<strong>從未被回覆</strong>——這些都是正在流失的機會。</div>
+        </div>
+        <div class="summary-point">
+          <div class="summary-dot"></div>
+          <div>AI 客服助理目前已接手 <strong>42% 的常見問題</strong>，每天自動完成大量重複性回覆工作，並在第一時間通知您真正需要人工判斷的情況。</div>
+        </div>
+        <div class="summary-point">
+          <div class="summary-dot"></div>
+          <div>接下來的開發重點，將直接解決<strong>檔期查詢</strong>（最大人工負擔）與<strong>定價正確性</strong>（最大風險點），預計可再減少 30% 的人工處理量。</div>
+        </div>
+        <div class="summary-point">
+          <div class="summary-dot"></div>
+          <div>目標：讓您把時間花在<strong>設計蛋糕、服務顧客、享受生活</strong>——而不是盯著手機等訊息。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      嗷嗚工作室 × AI 客服助理
+      <span>@ahwoo_dessert · 新北市三重區永福街 232 號</span>
+    </div>
+    <div class="footer-contact">
+      本提案由 Stev 製作<br/>
+      基於 2026 年 4 月資料分析
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

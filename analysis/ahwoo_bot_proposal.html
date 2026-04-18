@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>嗷嗚工作室 × LINE OA 智能客服系統</title>
+<style>
+  :root {
+    --cream: #fdf8f2;
+    --warm:  #f5ede0;
+    --brown: #5c3d1e;
+    --brown2: #8b5a2b;
+    --tan:   #c8956c;
+    --tan2:  #e8c9a8;
+    --green: #2d6a4f;
+    --green2:#52b788;
+    --green3:#d8f3dc;
+    --blue:  #1565c0;
+    --blue2: #90caf9;
+    --blue3: #e3f2fd;
+    --gold:  #e6a817;
+    --gold2: #fff8e1;
+    --red:   #c62828;
+    --red2:  #ffebee;
+    --gray:  #6b7280;
+    --gray2: #f5f5f5;
+    --text:  #2c1a0e;
+    --border:#e0cdb8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, "Noto Sans TC", "PingFang TC", sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, #3e2005 0%, var(--brown2) 60%, var(--tan) 100%);
+    color: white;
+    padding: 64px 48px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 5px 18px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 16px;
+    opacity: 0.85;
+    max-width: 520px;
+    margin: 0 auto 28px;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 32px; font-weight: 800; }
+  .hero-stat .lbl { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+  .section { margin-bottom: 56px; }
+  .section-tag {
+    display: inline-block;
+    background: var(--tan2);
+    color: var(--brown);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--brown);
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--gray);
+    font-size: 14px;
+    max-width: 600px;
+    margin-bottom: 28px;
+  }
+
+  /* ── CURRENT FEATURES ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .feature-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    transition: box-shadow 0.2s;
+  }
+  .feature-card:hover { box-shadow: 0 4px 20px rgba(92,61,30,0.1); }
+  .feature-icon { font-size: 28px; margin-bottom: 12px; }
+  .feature-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 6px;
+  }
+  .feature-desc { font-size: 13px; color: var(--gray); line-height: 1.55; }
+
+  /* ── HOW IT WORKS ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 8px 0 16px;
+  }
+  .flow-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .flow-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .flow-circle.auto  { background: var(--green3); }
+  .flow-circle.human { background: var(--gold2); }
+  .flow-circle.notify { background: var(--blue3); }
+  .flow-label { font-size: 12px; color: var(--text); font-weight: 600; }
+  .flow-sub   { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .flow-arrow {
+    font-size: 18px;
+    color: var(--tan);
+    flex-shrink: 0;
+    padding: 0 10px;
+    margin-bottom: 20px;
+  }
+
+  /* ── COVERAGE ── */
+  .coverage-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .coverage-header {
+    background: var(--warm);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .coverage-header h3 { font-size: 15px; font-weight: 700; color: var(--brown); }
+  .coverage-pct {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--green);
+  }
+  .coverage-list {
+    padding: 16px 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .coverage-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 6px 0;
+  }
+  .ci-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ci-dot.auto   { background: var(--green2); }
+  .ci-dot.human  { background: var(--gold); }
+  .ci-dot.urgent { background: var(--red); }
+
+  /* ── UPGRADE TIERS ── */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .tier-card {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .tier-head {
+    padding: 22px 22px 18px;
+    text-align: center;
+  }
+  .tier-head.current { background: linear-gradient(135deg, var(--brown) 0%, var(--brown2) 100%); color: white; }
+  .tier-head.next    { background: linear-gradient(135deg, #1a6ea8 0%, #2196f3 100%); color: white; }
+  .tier-head.future  { background: linear-gradient(135deg, #6a1a8a 0%, #9c27b0 100%); color: white; }
+
+  .tier-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .tier-name { font-size: 20px; font-weight: 800; }
+  .tier-sub  { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+  .tier-body {
+    background: white;
+    padding: 20px 22px;
+  }
+  .tier-item {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .tier-item:last-child { border-bottom: none; }
+  .tier-check { flex-shrink: 0; }
+
+  /* ── NOTIFICATION DEMO ── */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .tg-mock {
+    background: #1c2733;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: "SF Mono", monospace;
+    font-size: 13px;
+  }
+  .tg-mock .header {
+    font-size: 11px;
+    color: #64b5f6;
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .tg-bubble {
+    background: #2b5278;
+    border-radius: 10px 10px 10px 2px;
+    padding: 10px 14px;
+    color: #e8e8e8;
+    line-height: 1.6;
+    white-space: pre-line;
+    font-size: 13px;
+  }
+  .tg-bubble .tg-action { color: #fff; font-weight: 700; font-size: 14px; }
+  .tg-bubble .tg-div    { color: #5c7a96; }
+  .tg-bubble .tg-link   { color: #64b5f6; }
+  .tg-bubble .tg-note   { color: #a8d5f5; font-size: 12px; }
+
+  /* ── VALUE PROPS ── */
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .value-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .value-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .value-icon.brown  { background: var(--warm); }
+  .value-icon.green  { background: var(--green3); }
+  .value-icon.blue   { background: var(--blue3); }
+  .value-icon.gold   { background: var(--gold2); }
+  .value-title { font-size: 15px; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
+  .value-desc  { font-size: 13px; color: var(--gray); line-height: 1.55; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    background: var(--brown);
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    padding: 28px;
+    font-size: 13px;
+  }
+  .page-footer strong { color: white; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 26px; }
+    .feature-grid, .tier-grid, .demo-grid, .value-grid { grid-template-columns: 1fr; }
+    .coverage-list { grid-template-columns: repeat(2,1fr); }
+  }
+
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--tan);
+    border-radius: 2px;
+    margin: 12px 0 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">嗷嗚工作室 × LINE OA</div>
+  <h1>智能客服系統<br>說明書</h1>
+  <p>自動處理重複詢問，讓 Yvette 專注在真正需要人工回覆的顧客上</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">~42%</div>
+      <div class="lbl">訊息自動處理</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$0</div>
+      <div class="lbl">AI API 月費</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">100%</div>
+      <div class="lbl">回覆內容可控</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">24/7</div>
+      <div class="lbl">即時自動回應</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- WHAT IT DOES NOW -->
+  <div class="section">
+    <div class="section-tag">現行功能</div>
+    <div class="section-title">Bot 現在幫你做什麼</div>
+    <div class="divider"></div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">即時自動回覆</div>
+        <div class="feature-desc">12 類常見詢問（宅配、檔期、付款、口味、尺寸…）24 小時自動傳送正確回覆，不需 Yvette 介入。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <div class="feature-title">自動傳送訂購表單</div>
+        <div class="feature-desc">顧客說「想訂蛋糕」「怎麼訂」，Bot 立即傳送預篩選表單，引導進入正確訂購流程。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-title">Telegram 即時通知</div>
+        <div class="feature-desc">顧客填回表單、付款、客製需求等重要事件，即時推送到 Yvette 的 Telegram，不漏任何一筆。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">自動記錄到 Google Sheets</div>
+        <div class="feature-desc">每則顧客訊息自動記錄：顧客名稱、意圖分類、Bot 回覆內容、是否轉人工、通知狀態。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <div class="feature-title">逾時未回覆警報</div>
+        <div class="feature-desc">若有對話等待人工回覆超過 4 小時，系統自動發送提醒通知，避免遺漏重要顧客。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">零幻覺、100% 可控</div>
+        <div class="feature-desc">所有自動回覆內容完全由 Yvette 決定，Bot 不自創任何文字。修改回覆只需更新一個設定檔。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <div class="section-tag">運作方式</div>
+    <div class="section-title">每則訊息的處理流程</div>
+    <div class="divider"></div>
+    <div class="flow-row">
+      <div class="flow-item">
+        <div class="flow-circle"><span>💬</span></div>
+        <div class="flow-label">顧客傳訊息</div>
+        <div class="flow-sub">LINE OA</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-circle"><span>🔍</span></div>
+        <div class="flow-label">關鍵字比對</div>
+        <div class="flow-sub">0.1 秒內</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-circle auto"><span>✅</span></div>
+        <div class="flow-label">常見詢問</div>
+        <div class="flow-sub">自動回覆</div>
+      </div>
+      <div class="flow-arrow">or</div>
+      <div class="flow-item">
+        <div class="flow-circle human"><span>🙋</span></div>
+        <div class="flow-label">需人工</div>
+        <div class="flow-sub">等待語 + 通知</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-circle notify"><span>📣</span></div>
+        <div class="flow-label">Telegram 通知</div>
+        <div class="flow-sub">Yvette 處理</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-circle"><span>📊</span></div>
+        <div class="flow-label">寫入記錄</div>
+        <div class="flow-sub">Google Sheets</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COVERAGE -->
+  <div class="section">
+    <div class="section-tag">自動覆蓋範圍</div>
+    <div class="section-title">Bot 能自動處理哪些訊息</div>
+    <div class="divider"></div>
+    <div class="coverage-box">
+      <div class="coverage-header">
+        <div>
+          <h3>自動回覆意圖（12個）</h3>
+          <div style="font-size:13px;color:var(--gray);margin-top:2px">命中以下任何意圖 → Bot 自動回覆，不需人工</div>
+        </div>
+        <div class="coverage-pct">~42%</div>
+      </div>
+      <div class="coverage-list">
+        <div class="coverage-item"><div class="ci-dot auto"></div>問候 / 歡迎</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>索取訂購表單</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>宅配政策詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>檔期詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>付款方式詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>取貨地址詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>取貨時段詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>蛋糕尺寸詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>口味選項詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>加購配件詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>外燴服務詢問</div>
+        <div class="coverage-item"><div class="ci-dot auto"></div>致謝 / 結束語</div>
+      </div>
+      <div style="padding: 0 24px 16px; display:flex; gap: 24px; font-size:13px; color:var(--gray)">
+        <span><span style="color:var(--gold);font-weight:700">高優先通知：</span>填回表單、付款、完整訂單</span>
+        <span><span style="color:var(--red);font-weight:700">緊急通知：</span>改期取消、顧客抱怨</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELEGRAM DEMO -->
+  <div class="section">
+    <div class="section-tag">通知格式</div>
+    <div class="section-title">Yvette 收到的 Telegram 訊息長這樣</div>
+    <div class="divider"></div>
+    <div class="demo-grid">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--brown);margin-bottom:8px">顧客填回預篩選表單</div>
+        <div class="tg-mock">
+          <div class="header">Telegram · 嗷嗚工作室 Bot</div>
+          <div class="tg-bubble"><span class="tg-action">📝 確認檔期 ← 林美華</span>
+<span class="tg-div">────────────────────</span>
+預約項目（蛋糕）：4吋草莓
+預約日期：5/20
+<span class="tg-div">────────────────────</span>
+<span class="tg-note">✅ Bot 已回「稍待確認」</span>
+<span class="tg-link">→ LINE OA 傳完整表單</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--brown);margin-bottom:8px">顧客回報付款</div>
+        <div class="tg-mock">
+          <div class="header">Telegram · 嗷嗚工作室 Bot</div>
+          <div class="tg-bubble"><span class="tg-action">💰 確認付款 ← 陳小明</span>
+<span class="tg-div">────────────────────</span>
+轉帳後五碼 12345
+姓名：陳小明
+連絡電話：0912-345-678
+<span class="tg-div">────────────────────</span>
+<span class="tg-link">→ LINE OA 確認</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--brown);margin-bottom:8px">顧客詢問無法自動回覆的問題</div>
+        <div class="tg-mock">
+          <div class="header">Telegram · 嗷嗚工作室 Bot</div>
+          <div class="tg-bubble"><span class="tg-action">🎨 客製設計 ← 王小花</span>
+<span class="tg-div">────────────────────</span>
+請問可以做狗狗的人像蛋糕嗎？大概多少錢？
+<span class="tg-div">────────────────────</span>
+<span class="tg-link">→ LINE OA 回覆</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPGRADE TIERS -->
+  <div class="section">
+    <div class="section-tag">升級方案</div>
+    <div class="section-title">現在、下一步、未來可以做什麼</div>
+    <div class="divider"></div>
+    <div class="tier-grid">
+
+      <div class="tier-card">
+        <div class="tier-head current">
+          <div class="tier-badge">✅ 現行版本</div>
+          <div class="tier-name">基礎自動化</div>
+          <div class="tier-sub">已上線運行</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-item"><span class="tier-check">✅</span>12 類常見詢問自動回覆</div>
+          <div class="tier-item"><span class="tier-check">✅</span>自動傳送訂購表單</div>
+          <div class="tier-item"><span class="tier-check">✅</span>Telegram 即時通知</div>
+          <div class="tier-item"><span class="tier-check">✅</span>Google Sheets 完整記錄</div>
+          <div class="tier-item"><span class="tier-check">✅</span>逾時未回覆警報</div>
+          <div class="tier-item"><span class="tier-check">✅</span>零幻覺、100% 可控回覆</div>
+          <div class="tier-item"><span class="tier-check">✅</span>$0 AI API 月費</div>
+        </div>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-head next">
+          <div class="tier-badge">🔜 下一階段</div>
+          <div class="tier-name">智慧升級</div>
+          <div class="tier-sub">擴大自動覆蓋率</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-item"><span class="tier-check">🔲</span>增加更多關鍵字 → 提升覆蓋率至 60%+</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>Google Calendar 整合 → 顯示實際空檔</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>每日 / 每週統計報告自動傳送</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>Yvette 可從 Telegram 快速標記已處理</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>顧客滿意度快速回饋蒐集</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>訂單狀態追蹤提醒（取貨前 N 天通知）</div>
+        </div>
+      </div>
+
+      <div class="tier-card">
+        <div class="tier-head future">
+          <div class="tier-badge">🚀 未來可能</div>
+          <div class="tier-name">全自動化</div>
+          <div class="tier-sub">更高覆蓋率</div>
+        </div>
+        <div class="tier-body">
+          <div class="tier-item"><span class="tier-check">🔲</span>AI 意圖判斷（有監控）→ 覆蓋率 80%+</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>自動報價試算（Yvette 審核後才傳送）</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>顧客歷史訂單查詢</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>LINE 官方帳號圖文選單串接</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>多語言自動回覆（英文顧客）</div>
+          <div class="tier-item"><span class="tier-check">🔲</span>自動推播（節日優惠、新口味通知）</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- VALUE PROPS -->
+  <div class="section">
+    <div class="section-tag">核心價值</div>
+    <div class="section-title">為什麼這個系統適合嗷嗚工作室</div>
+    <div class="divider"></div>
+    <div class="value-grid">
+      <div class="value-card">
+        <div class="value-icon brown">⏱️</div>
+        <div>
+          <div class="value-title">省下重複工時</div>
+          <div class="value-desc">「宅配嗎」「幾點取」「哪裡取」這些每天重複的問題，Yvette 不需再親手回覆，每天省下 30～60 分鐘。</div>
+        </div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon green">🎯</div>
+        <div>
+          <div class="value-title">專注在高價值工作</div>
+          <div class="value-desc">Bot 處理常見詢問，Yvette 的時間只花在確認檔期、客製設計溝通、付款確認等真正需要人工判斷的事。</div>
+        </div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon blue">🛡️</div>
+        <div>
+          <div class="value-title">完全掌控品牌語氣</div>
+          <div class="value-desc">所有自動回覆都是 Yvette 寫的原文，Bot 不會自創或修改文字。品牌語氣 100% 維持嗷嗚風格。</div>
+        </div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon gold">📈</div>
+        <div>
+          <div class="value-title">不漏單、不漏訊息</div>
+          <div class="value-desc">深夜或假日收到的重要訊息（表單、付款、改期），Telegram 即時通知，隔天也能第一時間看到並處理。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="page-footer">
+  <strong>嗷嗚工作室 × LINE OA 智能客服系統</strong> &nbsp;·&nbsp;
+  建置說明書 2026-04 &nbsp;·&nbsp;
+  系統建置：Motion Science Lab
+</div>
+
+</body>
+</html>
